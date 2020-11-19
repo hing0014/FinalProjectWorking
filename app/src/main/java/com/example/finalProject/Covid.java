@@ -6,7 +6,7 @@
  * purpose: This is the final project with Teammates
  * This is the SQLite database
  */
-package com.example.FinalProjectWorking;
+package com.example.finalProject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -257,7 +257,6 @@ public class Covid extends AppCompatActivity {
             statusDisp.setText(status);
         }
     }
-}
 
     private void loadDataFromDatabase()
     {
