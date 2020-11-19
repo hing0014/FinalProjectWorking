@@ -10,11 +10,6 @@
     android:orientation="vertical">
 
 
-    <include
-        layout="@layout/activity_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <RelativeLayout android:layout_height="match_parent"
         android:layout_width="match_parent">
 
