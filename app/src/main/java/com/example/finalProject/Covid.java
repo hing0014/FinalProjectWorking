@@ -85,10 +85,11 @@ public class Covid extends AppCompatActivity {
         searchButton.setOnClickListener( (clk) ->
         {
             String searchWord= searchText.getText().toString();
-            if(URLUtil.isValidUrl(("https://api.covid19api.com/country/\"+searchWord +\"/status/confirmed/live?from=2020-10-14T00:00:00Z&to=2020-10-15T00:00:00Z")))
-            { CovidRequest req = new CovidRequest();
-            req.execute("https://api.covid19api.com/country/\"+searchWord +\"/status/confirmed/live?from=2020-10-14T00:00:00Z&to=2020-10-15T00:00:00Z"); }
-            else{Toast.makeText(this, R.string.searchText1, Toast.LENGTH_SHORT).show();}
+
+            {  CovidRequest req = new CovidRequest();
+               req.execute("https://api.covid19api.com/country/\"+searchWord +\"/status/confirmed/live?from=2020-10-14T00:00:00Z&to=2020-10-15T00:00:00Z"); }
+
+            // Toast.makeText(this, R.string.searchText1, Toast.LENGTH_SHORT).show();}
         });
     }
 
