@@ -6,7 +6,7 @@
  * purpose: This is the final project with Teammates
  * This is the SQLite database
  */
-package com.example.FinalProjectWorking;
+package com.example.finalProject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -27,10 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.finalProject.CovidOpener;
 import com.example.finalProject.R;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -81,30 +80,17 @@ public class Covid extends AppCompatActivity {
         statusDisp = findViewById(R.id.status);
         progressBar = findViewById(R.id.progressBar);
 
-
+        searchText=findViewById(R.id.searchText);
         searchButton = findViewById(R.id.magnify);
         searchButton.setOnClickListener( (clk) ->
         {
-            CovidRequest req = new CovidRequest();
-            req.execute("https://api.covid19api.com/country/\"+searchWord +\"/status/confirmed/live?from=2020-10-14T00:00:00Z&to=2020-10-15T00:00:00Z");
+            String searchWord= searchText.getText().toString();
+
+            {  CovidRequest req = new CovidRequest();
+               req.execute("https://api.covid19api.com/country/\"+searchWord +\"/status/confirmed/live?from=2020-10-14T00:00:00Z&to=2020-10-15T00:00:00Z"); }
+
+            // Toast.makeText(this, R.string.searchText1, Toast.LENGTH_SHORT).show();}
         });
-
-//        searchButton.setOnClickListener((click) -> //{
-//            searchText = findViewById(R.id.searchText);
-//            String searchWord = searchText.getText().toString();
-//
-//            CovidRequest req = new CovidRequest();
-//            req.execute("https://api.covid19api.com/country/\"+searchWord +\"/status/confirmed/live?from=2020-10-14T00:00:00Z&to=2020-10-15T00:00:00Z");
-//
-//           // Toast.makeText(this, R.string.searchText1, Toast.LENGTH_LONG).show();
-//        });
-
-        /*
-         * This is retrieve any privious data
-         * create table, put data into table
-         * @author Jihyun Park
-         * */
-
     }
 
     /*
@@ -257,12 +243,19 @@ public class Covid extends AppCompatActivity {
             statusDisp.setText(status);
         }
     }
-}
-
+    /*
+     * This is retrieve any privious data
+     * create table, put data into table
+     * @author Jihyun Park
+     * */
     private void loadDataFromDatabase()
     {
         covidOpener = new CovidOpener(this);
         CovidDB = covidOpener.getWritableDatabase();
+
+//        CovidDB.execSQL("CREATE TABLE " + covidOpener.TABLE_NAME + " (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+//                + covidOpener.COL_TITLE + "  text," + covidOpener.COL_COUNTRY + " text," + covidOpener.COL_CONCODE + " TEXT," + covidOpener.COL_PROVINCE + " text,"
+//                + covidOpener.COL_CASE + " double," + covidOpener.COL_STATUS + " text);");
 
         String[] columns = {covidOpener.COL_TITLE, covidOpener.COL_COUNTRY, covidOpener.COL_CONCODE, covidOpener.COL_PROVINCE,
                 covidOpener.COL_CASE, covidOpener.COL_STATUS};
