@@ -35,5 +35,11 @@
     <string name="url"><a href="%1$s">OPEN EVENT IN BROWSER</a></string>
     <string name="urlTitle">Event URL</string>
     <string name="back">BACK</string>
-
+    <string name="from">FROM: </string>
+    <string name="to">To: </string>
+    <string name="warning">warning! </string>
+    <string name="delete">Are you sure to delete this? </string>
+    <string name="norecover">It will be delete permanently. </string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

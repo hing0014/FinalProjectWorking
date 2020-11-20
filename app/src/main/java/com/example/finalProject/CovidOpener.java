@@ -1,3 +1,11 @@
+/* Course Name: CST2335_021
+ * Class name: CST2335 Graphical Interface Programming
+ * Covid19 Case Data
+ * Date: November 19, 2020
+ * Student Name : Jihyun Park
+ * purpose: This is the final project with Teammates
+ * This is the SQLite database
+ */
 package com.example.finalProject;
 
 import android.content.Context;
@@ -14,6 +22,7 @@ public class CovidOpener extends SQLiteOpenHelper {
     protected final static int VERSION_NUM = 1;
     public final static String TABLE_NAME = "Covid";
     public final static String COL_TITLE = "Covid Case";
+    public final static String COL_ID = "_id";
     public final static String COL_COUNTRY = "Country";
     public final static String COL_CONCODE = "Country Code";
     public final static String COL_PROVINCE = "Province";
@@ -33,9 +42,10 @@ public class CovidOpener extends SQLiteOpenHelper {
      * @ Author: Jihyun Park
      * */
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_NAME + " (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + COL_TITLE + "  text," + COL_COUNTRY + " text," + COL_CONCODE + " TEXT," + COL_PROVINCE + " text,"
-                + COL_CASE + " double," + COL_STATUS + " text);");
+        db.execSQL("CREATE TABLE " + TABLE_NAME
+                + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, " + COL_TITLE + "TEXT,"
+                + COL_COUNTRY + " TEXT," + COL_CONCODE + "TEXT," + COL_PROVINCE + " TEXT,"
+                + COL_CASE +  " double," + COL_STATUS + " TEXT);");
     }
 
     /*this is for using upgrading of the table

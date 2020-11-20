@@ -25,4 +25,12 @@
     <string name="url"><a href="@string/urlLink">ÉVÉNEMENT OUVERT DANS LE NAVIGATEUR</a></string>
     <string name="back">RETOUR</string>
     <string name="urlTitle">URL de l\'événement</string>
+    <string name="from">De : </string>
+    <string name="to">À: </string>
+    <string name="delete"> Êtes-vous sûr de vouloir le supprimer?</string>
+    <string name="warning">Attention! </string>
+    <string name="norecover">il sera supprimé définitivement. </string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+
 </resources>

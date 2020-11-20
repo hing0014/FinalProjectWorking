@@ -1,31 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="top"
     android:orientation="vertical">
 
-
-    <RelativeLayout android:layout_height="match_parent"
-        android:layout_width="match_parent">
-
-
     <EditText
         android:id="@+id/searchText"
-        android:layout_width="350dp"
+        android:layout_width="340dp"
         android:layout_height="wrap_content"
         android:hint="@string/searchText"
         android:inputType="textPersonName"
         android:visibility="visible" />
 
+    <EditText
+        android:id="@+id/fromText"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:layout_below="@id/searchText"
+        android:hint="@string/from">
+    </EditText>
+
+    <EditText
+        android:id="@+id/toText"
+        android:layout_width="170dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="10"
+        android:layout_below="@id/searchText"
+        android:layout_toRightOf="@id/fromText"
+        android:hint="@string/to">
+    </EditText>
+
     <ImageButton
         android:id="@+id/magnify"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
+        android:layout_width="650dp"
+        android:layout_height="100dp"
         android:layout_toRightOf="@id/searchText"
         app:srcCompat="@drawable/magnify" />
 
@@ -35,15 +48,16 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/searchText"
+        android:layout_below="@id/fromText"
         android:visibility="invisible" />
 
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/searchText"
-        android:layout_marginTop="25dp" />
+        android:layout_below="@+id/progressBar"
+        android:layout_marginTop="25dp" >
+
+    </ListView>
 
 </RelativeLayout>
-</LinearLayout>
