@@ -94,7 +94,7 @@ public class RecipeSearchPage extends AppCompatActivity {
         searchRecipes.setOnClickListener( click -> {
             String searchResult = searchBar.toString();
             if(URLUtil.isValidUrl("http://www.recipepuppy.com/api/?q="+ searchResult +"&p=3&format=xml")){
-                seeRecipes.execute("http://www.recipepuppy.com/api/","?q="+ searchResult +"&p=3&format=xml");
+                seeRecipes.execute("http://www.recipepuppy.com/api/?q="+ searchResult +"&p=3&format=xml");
                 //how to fill rows with recipe titles?
             }
             else{
@@ -224,7 +224,7 @@ public class RecipeSearchPage extends AppCompatActivity {
             String href = null;
             String ingredients = null;
             try {
-                String encode = strings[0] + URLEncoder.encode(strings[1], "UTF-8"); //fix
+                String encode = URLEncoder.encode(strings[0], "UTF-8"); //fix
                 URL url = new URL(encode);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 InputStream response = urlConnection.getInputStream();
