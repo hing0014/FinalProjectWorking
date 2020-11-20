@@ -72,7 +72,7 @@ public class RecipeSearchPage extends AppCompatActivity {
     /**
      * Instance of the AsyncTask class that runs a background thread to retrieve the recipes from the website
      */
-    ViewRecipesFromURL seeRecipes;
+    ViewRecipesFromURL seeRecipes = new ViewRecipesFromURL();
 
     /**
      * Initializes the variables above, loads the database, and calls click listeners for the search button and listview
@@ -95,7 +95,6 @@ public class RecipeSearchPage extends AppCompatActivity {
             String searchResult = searchBar.toString();
             if(URLUtil.isValidUrl("http://www.recipepuppy.com/api/?q="+ searchResult +"&p=3&format=xml")){
                 seeRecipes.execute("http://www.recipepuppy.com/api/?q="+ searchResult +"&p=3&format=xml");
-                //how to fill rows with recipe titles?
             }
             else{
                 Toast.makeText(getApplicationContext(), "Recipes not found", Toast.LENGTH_SHORT).show();
