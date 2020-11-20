@@ -56,7 +56,7 @@ public class Covid extends AppCompatActivity {
     CovidOpener covidOpener;
 
     /**
-     * When the button, Covid-19, of the main page, connected with this page.
+     * When the button, Covid-19, of the main page, connected with this page. gdfdfdfhddffdfdf
      * When the search button is clicked the search button, stored data is showed the covid table which in contained all information that user wants.
      *
      * @param savedInstanceState Bundle object used in the super call of onCreate.
