@@ -96,22 +96,13 @@
             android:textSize="20sp"
             android:gravity="center_vertical"
             android:layout_below="@+id/ticketPriceMaxLabel"/>
-        <TextView
-            android:id="@+id/urlLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/urlTitle"
-            android:gravity="center_vertical"
-            android:layout_below="@+id/ticketPriceMax"/>
-        <TextView
-            android:id="@+id/url"
+        <Button
+            android:id="@+id/urlButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/url"
-            android:textSize="20sp"
-            android:gravity="center_vertical"
-            android:layout_below="@+id/urlLabel"/>
-
+            android:layout_below="@+id/ticketPriceMax"
+            />
         <Button
             android:id="@+id/back"
             android:layout_width="match_parent"

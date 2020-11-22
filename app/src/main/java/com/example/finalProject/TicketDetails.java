@@ -1,6 +1,9 @@
 package com.example.finalProject;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.widget.Button;
@@ -50,7 +53,6 @@ public class TicketDetails extends AppCompatActivity
         TextView startDatev = findViewById(R.id.startDate);
         TextView ticketPriceMinv = findViewById(R.id.ticketPriceMin);
         TextView ticketPriceMaxv = findViewById(R.id.ticketPriceMax);
-        TextView urlv = findViewById(R.id.url);
 
         image = TicketMaster.decodeBase64(dataToSet.getString(ITEM_IMAGE_STRING));
         city = dataToSet.getString(ITEM_CITY);
@@ -67,10 +69,20 @@ public class TicketDetails extends AppCompatActivity
         ticketPriceMinv.setText(String.valueOf(ticketPriceMin));
         ticketPriceMaxv.setText(String.valueOf(ticketPriceMax));
 
-        urlv.setText(eventUrl);
-        urlv.setMovementMethod(LinkMovementMethod.getInstance());
-
         Button back = findViewById(R.id.back);
         back.setOnClickListener( clk -> onBackPressed());
+
+        Button urlButton = findViewById(R.id.urlButton);
+        urlButton.setOnClickListener( clk ->
+        {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle(getResources().getString(R.string.urlChoice))
+            .setPositiveButton(getResources().getString(R.string.yes), (click, arg) ->
+            {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(eventUrl));
+                startActivity(browserIntent);
+            }).setNegativeButton("No", (click, arg) -> {  }).create().show();
+        });
+
     }
 }

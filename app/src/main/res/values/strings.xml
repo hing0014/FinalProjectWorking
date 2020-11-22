@@ -32,7 +32,8 @@
     <string name="startDate">Start Date</string>
     <string name="minPrice">Minimum Price</string>
     <string name="maxPrice">Maximum Price</string>
-    <string name="url"><a href="%1$s">OPEN EVENT IN BROWSER</a></string>
+    <string name="url">BUY TICKET</string>
+    <string name="urlChoice">Would you Like to open the event page in your browser?</string>
     <string name="urlTitle">Event URL</string>
     <string name="back">BACK</string>
     <string name="from">FROM: </string>
@@ -40,6 +41,8 @@
     <string name="warning">warning! </string>
     <string name="delete">Are you sure to delete this? </string>
     <string name="norecover">It will be delete permanently. </string>
+    <string name="InvalidRadious">INVALID RADIUS: please enter a whole number.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="datNotFound">Data not found.</string>
 </resources>

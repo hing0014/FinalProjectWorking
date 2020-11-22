@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,8 +24,9 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,6 +42,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * Links between the XML and ticketmaster database.
  *  <p>
@@ -70,6 +74,7 @@ public class TicketMaster extends AppCompatActivity
     int eventArrayLength;
     Bitmap image;
     SQLiteDatabase dataBase;
+    static boolean dataNotFound = false;
 
     public final static String ITEM_CITY = "CITY";
     public final static String ITEM_NAME = "EVENT NAME";
@@ -95,17 +100,21 @@ public class TicketMaster extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ticket_master);
         theBar = findViewById(R.id.loadBar);
-        theBar.setVisibility(View.VISIBLE);
-
+        theBar.setVisibility(View.INVISIBLE);
         ListView myList = findViewById(R.id.theListView);
         loadDataFromDatabase();
+        EditText cityText = (EditText) findViewById(R.id.citySearch);
+        if(events.size() != 0)
+        {
+            cityText.setText(events.get(0).getCity());
+            myAdapter.notifyDataSetChanged();
+        }
         myList.setAdapter(myAdapter = new TicketMasterListAdapter());
 
         Button searchButton = findViewById(R.id.searchButton);
-        TicketMasterQuery tickQuer = new TicketMasterQuery();
+        AtomicReference<TicketMasterQuery> tickQuer = new AtomicReference<>(new TicketMasterQuery());
         searchButton.setOnClickListener(click ->
         {
-            EditText cityText = (EditText) findViewById(R.id.citySearch);
             city = cityText.getText().toString();
             EditText radiusText = (EditText) findViewById(R.id.radius);
             radius = radiusText.getText().toString();
@@ -117,9 +126,17 @@ public class TicketMaster extends AppCompatActivity
             }
             if(isInt)
             {
-                tickQuer.execute("https://app.ticketmaster.com/discovery/v2/events.json?apikey=9xSSOAi25vaqiTP1UGfMa1fxycNnJPpd&city=" + city + "&radius=" + radius, city);
+                if(URLUtil.isValidUrl("https://app.ticketmaster.com/discovery/v2/events.json?apikey=9xSSOAi25vaqiTP1UGfMa1fxycNnJPpd&city=" + city + "&radius=" + radius))
+                {
+                    theBar.setProgress(0);
+                    theBar.setVisibility(View.VISIBLE);
+                    events.clear();
+                    dataBase.delete(TicketMasterOpener.TABLE_NAME, null, null);
+                    tickQuer.get().execute("https://app.ticketmaster.com/discovery/v2/events.json?apikey=9xSSOAi25vaqiTP1UGfMa1fxycNnJPpd&city=" + city + "&radius=" + radius, city);
+                    tickQuer.set(new TicketMasterQuery());
+                }
             }
-            else Toast.makeText(getApplicationContext(),"INVALID RADIUS: please enter a whole number", Toast.LENGTH_SHORT).show();
+            else Snackbar.make(click, R.string.InvalidRadious,Snackbar.LENGTH_SHORT).show();
         });
 
         myList.setOnItemClickListener( (parent, view, pos, id) -> {
@@ -171,10 +188,10 @@ public class TicketMaster extends AppCompatActivity
         @Override
         protected String doInBackground(String... debates)
         {
-            image = null;
-            city = debates[1];
             try
             {
+                image = null;
+                city = debates[1];
                 URL url = new URL(debates[0]);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 InputStream response = urlConnection.getInputStream();
@@ -187,6 +204,12 @@ public class TicketMaster extends AppCompatActivity
                 }
                 String result = sb.toString();
                 JSONObject jObject = new JSONObject(result);
+                JSONObject testLinks = jObject.getJSONObject("page");
+                if(testLinks.getInt("totalElements") == 0)
+                {
+                    dataNotFound = true;
+                    return "City Not Found";
+                }
                 JSONObject jObjEmbed = jObject.getJSONObject("_embedded");
                 JSONArray jsonEventArray = jObjEmbed.getJSONArray("events");
                 eventArrayLength = jsonEventArray.length();
@@ -262,12 +285,13 @@ public class TicketMaster extends AppCompatActivity
                     publishProgress(inpars);
                 }
             }
-            catch (Exception ignored)
+            catch (Exception e)
             {
-
+                dataNotFound = true;
+                return "City Not Found";
             }
             publishProgress(100);
-            return "Compleated Success";
+            return "Completed Success";
         }
 
         /**
@@ -295,6 +319,11 @@ public class TicketMaster extends AppCompatActivity
          */
         public void onPostExecute(String fromDoInBackground)
         {
+            if(dataNotFound)
+            {
+                Toast.makeText(getApplicationContext(),R.string.datNotFound, Toast.LENGTH_SHORT).show();
+                dataNotFound = false;
+            }
             theBar.setVisibility(View.INVISIBLE);
             myAdapter.notifyDataSetChanged();
             Log.i("Finalized", fromDoInBackground);

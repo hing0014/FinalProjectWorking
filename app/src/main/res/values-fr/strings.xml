@@ -19,7 +19,7 @@
     <string name="startDate">Date de début</string>
     <string name="minPrice">Prix minimum More</string>
     <string name="maxPrice">Prix maximum</string>
-    <string name="url"><a href="@string/urlLink">ÉVÉNEMENT OUVERT DANS LE NAVIGATEUR</a></string>
+    <string name="url">ACHETER UN BILLET</string>
     <string name="back">RETOUR</string>
     <string name="status">Le statut:</string>
     <string name="cases">Le cas:</string>
@@ -27,5 +27,8 @@
     <string name="conCode">Le code du pays:</string>
     <string name="country">Les pays:</string>
     <string name="searchText">La recherche..</string>
-    <string name="urlTitle">URL de l\'événement</string>
+    <string name="urlTitle">More about this source textSource text required for additional translation information</string>
+    <string name="urlChoice">Souhaitez-vous ouvrir la page de l\'événement dans votre navigateur?</string>
+    <string name="InvalidRadious">RAYON INVALIDE: veuillez saisir un nombre entier.</string>
+    <string name="datNotFound">Données introuvables.</string>
 </resources>
