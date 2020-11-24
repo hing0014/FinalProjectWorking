@@ -22,7 +22,18 @@
     <string name="startDate">Date de début</string>
     <string name="minPrice">Prix minimum More</string>
     <string name="maxPrice">Prix maximum</string>
-    <string name="url"><a href="@string/urlLink">ÉVÉNEMENT OUVERT DANS LE NAVIGATEUR</a></string>
+    <string name="url">ACHETER UN BILLET</string>
     <string name="back">RETOUR</string>
-    <string name="urlTitle">URL de l\'événement</string>
+    <string name="urlTitle">More about this source textSource text required for additional translation information</string>
+    <string name="from">De : </string>
+    <string name="to">À: </string>
+    <string name="delete"> Êtes-vous sûr de vouloir le supprimer?</string>
+    <string name="warning">Attention! </string>
+    <string name="norecover">il sera supprimé définitivement. </string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <string name="urlChoice">Souhaitez-vous ouvrir la page de l\'événement dans votre navigateur?</string>
+    <string name="InvalidRadious">RAYON INVALIDE: veuillez saisir un nombre entier.</string>
+    <string name="datNotFound">Données introuvables.</string>
+
 </resources>

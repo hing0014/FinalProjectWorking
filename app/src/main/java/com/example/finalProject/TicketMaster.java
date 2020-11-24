@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -15,16 +16,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,6 +44,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * Links between the XML and ticketmaster database.
  *  <p>
@@ -55,10 +61,13 @@ public class TicketMaster extends AppCompatActivity
     /**
      * Fields for storing the database information for use throughout the class.
      */
+    private SharedPreferences prefs = null;
     private ArrayList<TicketEvent> events = new ArrayList<>();
     private TicketMasterListAdapter myAdapter;
     private ProgressBar theBar;
     String city;
+    String cityKey = "city";
+    String radiusKey = "radius";
     String eventName;
     String startDate;
     double ticketPriceMin;
@@ -70,6 +79,8 @@ public class TicketMaster extends AppCompatActivity
     int eventArrayLength;
     Bitmap image;
     SQLiteDatabase dataBase;
+    static boolean dataNotFound = false;
+    public static boolean isTablet = false;
 
     public final static String ITEM_CITY = "CITY";
     public final static String ITEM_NAME = "EVENT NAME";
@@ -94,20 +105,37 @@ public class TicketMaster extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ticket_master);
-        theBar = findViewById(R.id.loadBar);
-        theBar.setVisibility(View.VISIBLE);
 
+        FrameLayout frame = findViewById(R.id.frame);
+        if(frame != null) isTablet = true;
+
+        theBar = findViewById(R.id.loadBar);
+        theBar.setVisibility(View.INVISIBLE);
         ListView myList = findViewById(R.id.theListView);
         loadDataFromDatabase();
+
+        EditText cityText = (EditText) findViewById(R.id.citySearch);
+        prefs = getSharedPreferences("file", Context.MODE_PRIVATE);
+        String prefCity = prefs.getString(cityKey, "");
+        cityText.setText(prefCity);
+
+        EditText radiusText = (EditText) findViewById(R.id.radius);
+        prefs = getSharedPreferences("file", Context.MODE_PRIVATE);
+        String radText = prefs.getString(radiusKey, "");
+        radiusText.setText(radText);
+
+        if(events.size() != 0)
+        {
+            cityText.setText(events.get(0).getCity());
+            myAdapter.notifyDataSetChanged();
+        }
         myList.setAdapter(myAdapter = new TicketMasterListAdapter());
 
         Button searchButton = findViewById(R.id.searchButton);
-        TicketMasterQuery tickQuer = new TicketMasterQuery();
+        AtomicReference<TicketMasterQuery> tickQuer = new AtomicReference<>(new TicketMasterQuery());
         searchButton.setOnClickListener(click ->
         {
-            EditText cityText = (EditText) findViewById(R.id.citySearch);
             city = cityText.getText().toString();
-            EditText radiusText = (EditText) findViewById(R.id.radius);
             radius = radiusText.getText().toString();
             boolean isInt = true;
             try {
@@ -117,9 +145,17 @@ public class TicketMaster extends AppCompatActivity
             }
             if(isInt)
             {
-                tickQuer.execute("https://app.ticketmaster.com/discovery/v2/events.json?apikey=9xSSOAi25vaqiTP1UGfMa1fxycNnJPpd&city=" + city + "&radius=" + radius, city);
+                if(URLUtil.isValidUrl("https://app.ticketmaster.com/discovery/v2/events.json?apikey=9xSSOAi25vaqiTP1UGfMa1fxycNnJPpd&city=" + city + "&radius=" + radius))
+                {
+                    theBar.setProgress(0);
+                    theBar.setVisibility(View.VISIBLE);
+                    events.clear();
+                    dataBase.delete(TicketMasterOpener.TABLE_NAME, null, null);
+                    tickQuer.get().execute("https://app.ticketmaster.com/discovery/v2/events.json?apikey=9xSSOAi25vaqiTP1UGfMa1fxycNnJPpd&city=" + city + "&radius=" + radius, city);
+                    tickQuer.set(new TicketMasterQuery());
+                }
             }
-            else Toast.makeText(getApplicationContext(),"INVALID RADIUS: please enter a whole number", Toast.LENGTH_SHORT).show();
+            else Snackbar.make(click, R.string.InvalidRadious,Snackbar.LENGTH_SHORT).show();
         });
 
         myList.setOnItemClickListener( (parent, view, pos, id) -> {
@@ -134,9 +170,21 @@ public class TicketMaster extends AppCompatActivity
             dataToPass.putString(ITEM_URL, temp.getUrl() );
             dataToPass.putString(ITEM_IMAGE_STRING, encodeTobase64(temp.getImage()));
 
-            Intent nextActivity = new Intent(TicketMaster.this, TicketDetails.class);
-            nextActivity.putExtras(dataToPass); //send data to next activity
-            startActivity(nextActivity); //make the transition
+            if(isTablet)
+            {
+                FragmentTicketDetails dFragment = new FragmentTicketDetails(); //add a DetailFragment
+                dFragment.setArguments( dataToPass ); //pass it a bundle for information
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frame, dFragment) //Add the fragment in FrameLayout
+                        .commit(); //actually load the fragment. Calls onCreate() in DetailFragment
+            }
+            else //isPhone
+            {
+                Intent nextActivity = new Intent(TicketMaster.this, EmptyTicket.class);
+                nextActivity.putExtras(dataToPass); //send data to next activity
+                startActivity(nextActivity); //make the transition
+            }
         });
     }
 
@@ -171,10 +219,10 @@ public class TicketMaster extends AppCompatActivity
         @Override
         protected String doInBackground(String... debates)
         {
-            image = null;
-            city = debates[1];
             try
             {
+                image = null;
+                city = debates[1];
                 URL url = new URL(debates[0]);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 InputStream response = urlConnection.getInputStream();
@@ -187,6 +235,12 @@ public class TicketMaster extends AppCompatActivity
                 }
                 String result = sb.toString();
                 JSONObject jObject = new JSONObject(result);
+                JSONObject testLinks = jObject.getJSONObject("page");
+                if(testLinks.getInt("totalElements") == 0)
+                {
+                    dataNotFound = true;
+                    return "City Not Found";
+                }
                 JSONObject jObjEmbed = jObject.getJSONObject("_embedded");
                 JSONArray jsonEventArray = jObjEmbed.getJSONArray("events");
                 eventArrayLength = jsonEventArray.length();
@@ -262,12 +316,13 @@ public class TicketMaster extends AppCompatActivity
                     publishProgress(inpars);
                 }
             }
-            catch (Exception ignored)
+            catch (Exception e)
             {
-
+                dataNotFound = true;
+                return "City Not Found";
             }
             publishProgress(100);
-            return "Compleated Success";
+            return "Completed Success";
         }
 
         /**
@@ -295,6 +350,11 @@ public class TicketMaster extends AppCompatActivity
          */
         public void onPostExecute(String fromDoInBackground)
         {
+            if(dataNotFound)
+            {
+                Toast.makeText(getApplicationContext(),R.string.datNotFound, Toast.LENGTH_SHORT).show();
+                dataNotFound = false;
+            }
             theBar.setVisibility(View.INVISIBLE);
             myAdapter.notifyDataSetChanged();
             Log.i("Finalized", fromDoInBackground);
@@ -444,5 +504,25 @@ public class TicketMaster extends AppCompatActivity
     public static Bitmap decodeBase64(String input) {
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        EditText citTex =  (EditText) findViewById(R.id.citySearch);
+        String cit = citTex.getText().toString();
+        saveSharedPrefs(cit, cityKey);
+
+        EditText radTex =  (EditText) findViewById(R.id.radius);
+        String rad = radTex.getText().toString();
+        saveSharedPrefs(rad, radiusKey);
+    }
+
+    public void saveSharedPrefs(String stringToSave, String key)
+    {
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(key, stringToSave);
+        editor.apply();
     }
 }
