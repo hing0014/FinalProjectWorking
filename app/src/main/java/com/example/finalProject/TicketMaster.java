@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -60,10 +61,13 @@ public class TicketMaster extends AppCompatActivity
     /**
      * Fields for storing the database information for use throughout the class.
      */
+    private SharedPreferences prefs = null;
     private ArrayList<TicketEvent> events = new ArrayList<>();
     private TicketMasterListAdapter myAdapter;
     private ProgressBar theBar;
     String city;
+    String cityKey = "city";
+    String radiusKey = "radius";
     String eventName;
     String startDate;
     double ticketPriceMin;
@@ -109,7 +113,17 @@ public class TicketMaster extends AppCompatActivity
         theBar.setVisibility(View.INVISIBLE);
         ListView myList = findViewById(R.id.theListView);
         loadDataFromDatabase();
+
         EditText cityText = (EditText) findViewById(R.id.citySearch);
+        prefs = getSharedPreferences("file", Context.MODE_PRIVATE);
+        String prefCity = prefs.getString(cityKey, "");
+        cityText.setText(prefCity);
+
+        EditText radiusText = (EditText) findViewById(R.id.radius);
+        prefs = getSharedPreferences("file", Context.MODE_PRIVATE);
+        String radText = prefs.getString(radiusKey, "");
+        radiusText.setText(radText);
+
         if(events.size() != 0)
         {
             cityText.setText(events.get(0).getCity());
@@ -122,7 +136,6 @@ public class TicketMaster extends AppCompatActivity
         searchButton.setOnClickListener(click ->
         {
             city = cityText.getText().toString();
-            EditText radiusText = (EditText) findViewById(R.id.radius);
             radius = radiusText.getText().toString();
             boolean isInt = true;
             try {
@@ -491,5 +504,25 @@ public class TicketMaster extends AppCompatActivity
     public static Bitmap decodeBase64(String input) {
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        EditText citTex =  (EditText) findViewById(R.id.citySearch);
+        String cit = citTex.getText().toString();
+        saveSharedPrefs(cit, cityKey);
+
+        EditText radTex =  (EditText) findViewById(R.id.radius);
+        String rad = radTex.getText().toString();
+        saveSharedPrefs(rad, radiusKey);
+    }
+
+    public void saveSharedPrefs(String stringToSave, String key)
+    {
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(key, stringToSave);
+        editor.apply();
     }
 }
