@@ -19,6 +19,7 @@ import android.webkit.URLUtil;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -75,6 +76,7 @@ public class TicketMaster extends AppCompatActivity
     Bitmap image;
     SQLiteDatabase dataBase;
     static boolean dataNotFound = false;
+    public static boolean isTablet = false;
 
     public final static String ITEM_CITY = "CITY";
     public final static String ITEM_NAME = "EVENT NAME";
@@ -99,6 +101,10 @@ public class TicketMaster extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ticket_master);
+
+        FrameLayout frame = findViewById(R.id.frame);
+        if(frame != null) isTablet = true;
+
         theBar = findViewById(R.id.loadBar);
         theBar.setVisibility(View.INVISIBLE);
         ListView myList = findViewById(R.id.theListView);
@@ -151,9 +157,21 @@ public class TicketMaster extends AppCompatActivity
             dataToPass.putString(ITEM_URL, temp.getUrl() );
             dataToPass.putString(ITEM_IMAGE_STRING, encodeTobase64(temp.getImage()));
 
-            Intent nextActivity = new Intent(TicketMaster.this, TicketDetails.class);
-            nextActivity.putExtras(dataToPass); //send data to next activity
-            startActivity(nextActivity); //make the transition
+            if(isTablet)
+            {
+                FragmentTicketDetails dFragment = new FragmentTicketDetails(); //add a DetailFragment
+                dFragment.setArguments( dataToPass ); //pass it a bundle for information
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.frame, dFragment) //Add the fragment in FrameLayout
+                        .commit(); //actually load the fragment. Calls onCreate() in DetailFragment
+            }
+            else //isPhone
+            {
+                Intent nextActivity = new Intent(TicketMaster.this, EmptyTicket.class);
+                nextActivity.putExtras(dataToPass); //send data to next activity
+                startActivity(nextActivity); //make the transition
+            }
         });
     }
 
