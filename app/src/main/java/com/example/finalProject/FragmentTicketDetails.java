@@ -10,13 +10,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+/**
+ * Uses the passed in data to populate the previous Views Frame layout with a new fragment_ticket_details.
+ *  <p>
+ * Course Name: CST8288_010
+ * Class name: FragmentTicketDetails
+ * Date: November 23, 2020
+ *
+ * @version 1.0
+ * @author Chris HIng
+ */
 public class FragmentTicketDetails extends Fragment
 {
     private AppCompatActivity parentActivity;
@@ -36,6 +46,16 @@ public class FragmentTicketDetails extends Fragment
     double ticketPriceMax;
     String eventUrl;
 
+    /**
+     * Manages the fragment data.
+     * <p>
+     * Inflates the fragment_ticket_details into the passed in view.
+     * The Bundle passed in hold the data required to populate the Views.
+     *
+     * @param inflater The LayoutInflater used to get the View for modification.
+     * @param container The LayoutInflater used to get the View for modification.
+     * @param savedInstanceState The Bundle of data used to update the views.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
@@ -88,9 +108,16 @@ public class FragmentTicketDetails extends Fragment
         });
         return result;
     }
-
+    /**
+     * Defines the AppCompatActivity
+     * <p>
+     * Inflates the fragment_ticket_details into the passed in view.
+     * The Bundle passed in hold the data required to populate the Views.
+     *
+     * @param context The Context used to define where the data came from.
+     */
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
         //context will either be FragmentExample for a tablet, or EmptyActivity for phone
