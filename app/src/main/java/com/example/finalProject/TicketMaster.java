@@ -155,9 +155,11 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         Button helpButton = findViewById(R.id.help);
         helpButton.setOnClickListener(click ->
         {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setTitle(getResources().getString(R.string.ticketMasterHelp))
-                    .setPositiveButton(getResources().getString(R.string.ok), (clk, arg) -> { }).create().show();
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.dialogWrap);
+            alertDialogBuilder.setTitle(R.string.ticketMasterHelpTitle)
+                    .setPositiveButton(getResources().getString(R.string.ok), (clk, arg) -> { });
+            alertDialogBuilder.setMessage(R.string.ticketMasterHelp)
+                    .create().show();
         });
 
         Button searchButton = findViewById(R.id.searchButton);

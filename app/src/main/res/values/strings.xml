@@ -51,6 +51,7 @@
     <string name="open">open</string>
     <string name="close">close</string>
     <string name="help">help</string>
-    <string name="ticketMasterHelp">Enter a the name of a city to search for TicketMaster events. Enter a radius in miles to extend the search outside the city.</string>
+    <string name="ticketMasterHelp">Enter a the name of the city you wish to search.  Enter a radius in miles to extend the search outside the city.</string>
     <string name="ok">OK</string>
+    <string name="ticketMasterHelpTitle">SEARCH FOR TICKETMASTER EVENTS</string>
 </resources>

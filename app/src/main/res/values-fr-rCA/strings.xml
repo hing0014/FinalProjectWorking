@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FinalProject</string>
+    <string name="app_name">Projet final</string>
     <string name="CovidNavButton">Covid-19</string>
     <string name="AudioNavButton">Base de données audio</string>
     <string name="RecipeNavButton">Recette</string>
@@ -41,7 +41,8 @@
     <string name="open">open</string>
     <string name="close">close</string>
     <string name="help">Aidez-moi</string>
-    <string name="ticketMasterHelp">Saisissez le nom d\'une ville pour rechercher des événements TicketMaster. Entrez un rayon en miles pour étendre la recherche en dehors de la ville.</string>
+    <string name="ticketMasterHelp">Entrez le nom de la ville que vous souhaitez rechercher. Entrez un rayon en miles pour étendre la recherche en dehors de la ville.</string>
     <string name="ok">D\'accord</string>
+    <string name="ticketMasterHelpTitle">RECHERCHE D\'ÉVÉNEMENTS TICKETMASTER</string>
 
 </resources>
