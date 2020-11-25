@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
@@ -74,8 +73,10 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
      * Fields for storing the database information for use throughout the class.
      */
     private SharedPreferences prefs = null;
+    FragmentTicketDetails dFragment = null;
     private ArrayList<TicketEvent> events = new ArrayList<>();
     private TicketMasterListAdapter myAdapter;
+    FrameLayout frame;
     private ProgressBar theBar;
     String city;
     String cityKey = "city";
@@ -118,8 +119,8 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ticket_master);
 
-        FrameLayout frame = findViewById(R.id.frame);
-        if(frame != null) isTablet = true;
+        frame = findViewById(R.id.frame);
+        if(frame != null)isTablet = true;
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -203,7 +204,7 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
 
             if(isTablet)
             {
-                FragmentTicketDetails dFragment = new FragmentTicketDetails(); //add a DetailFragment
+                dFragment = new FragmentTicketDetails(); //add a DetailFragment
                 dFragment.setArguments( dataToPass ); //pass it a bundle for information
                 getSupportFragmentManager()
                         .beginTransaction()
@@ -216,6 +217,26 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
                 nextActivity.putExtras(dataToPass); //send data to next activity
                 startActivity(nextActivity); //make the transition
             }
+        });
+
+        myList.setOnItemLongClickListener( (parent, view, pos, id) -> {
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle(getResources().getString(R.string.do_delete)).setMessage(R.string.deletSure)
+                    .setPositiveButton("Yes", (click, arg) ->
+                    {
+                        TicketEvent selectedEvent = events.get(pos);
+                        deleteEvent(selectedEvent);
+                        events.remove(pos);
+                        if(isTablet)
+                        {
+                            frame.removeAllViews();
+                        }
+                        myAdapter.notifyDataSetChanged();
+                    })
+                    .setNegativeButton("No", (click, arg) -> {  })
+                    .create().show();
+            return true;
         });
     }
 
@@ -347,10 +368,9 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
                     publishProgress(inpars);
                 }
             }
-            catch (Exception e)
+            catch (Exception ignored)
             {
-                dataNotFound = true;
-                return "City Not Found";
+
             }
             publishProgress(100);
             return "Completed Success";
@@ -405,17 +425,34 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
      */
     private class TicketMasterListAdapter extends BaseAdapter
     {
-
+        /**
+         * Returns the size of the events ArrayList.
+         * <p>
+         * If events is null, return 0.
+         * Else return the size of events.
+         */
         public int getCount()
         {
             if(events == null) return 0;
             return events.size();
         }
-
+        /**
+         * Returns the Object position of the passed in int position.
+         * <p>
+         * Converts the int to an object.
+         */
         public Object getItem(int position){return position;}
-
+        /**
+         * Returns the long position of the passed in int position.
+         * <p>
+         * Converts the int to a long.
+         */
         public long getItemId(int position) { return position; }
-
+        /**
+         * Returns the view to be added into the ListView.
+         * <p>
+         * Adds the data into each view, then passes the view to be added to the ListView.
+         */
         public View getView(int position, View view, ViewGroup parent)
         {
             TicketEvent arEl = events.get(position);
@@ -475,7 +512,27 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         }
         results.close();
     }
-
+    /**
+     * Removes an item from the database.
+     * <p>
+     * Removes the passed in ticket event item from the database.
+     *
+     * @param c TicketEvent object to be removed from the database.
+     */
+    protected void deleteEvent(TicketEvent c)
+    {
+        dataBase.delete(TicketMasterOpener.TABLE_NAME, TicketMasterOpener.COL_ID + "= ?", new String[] {Long.toString(c.getId())});
+    }
+    /**
+     * TicketEvent holds the data for a single TicketMaster event.
+     *  <p>
+     * Course Name: CST8288_010
+     * Class name: TicketEvent
+     * Date: November 25, 2020
+     *
+     * @version 1.0
+     * @author Chris HIng
+     */
     private static class TicketEvent
     {
         String city;
@@ -486,7 +543,11 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         String url;
         long index;
         Bitmap image;
-
+        /**
+         * Constructor for the TicketEvent.
+         * <p>
+         * uses the passed in values to instantiate a new TicketEvent object.
+         */
         private TicketEvent(String city, String eventName, String startDate, double ticketPriceMin, double ticketPriceMax, String url, Bitmap image, long index)
         {
             this.city = city;
@@ -498,26 +559,71 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
             this.index = index;
             this.image = image;
         }
-
+        /**
+         * Returns the city name.
+         * <p>
+         * Returns the city name.
+         */
         public String getCity()
         {
             return city;
         }
+        /**
+         * Returns the event Name.
+         * <p>
+         * Returns the event Name.
+         */
         public String getEventName()
         {
             return eventName;
         }
+        /**
+         * Returns the start date.
+         * <p>
+         * Returns the start date.
+         */
         public String getStartDate(){ return startDate; }
+        /**
+         * Returns the minimum ticket price.
+         * <p>
+         * Returns the minimum ticket price.
+         */
         public double getTicketPriceMin(){ return ticketPriceMin; }
+        /**
+         * Returns the maximum ticket price.
+         * <p>
+         * Returns the maximum ticket price.
+         */
         public double getTicketPriceMax(){ return ticketPriceMax; }
+        /**
+         * Returns the url.
+         * <p>
+         * Returns the url.
+         */
         public String getUrl(){ return url; }
+        /**
+         * Returns the image.
+         * <p>
+         * Returns the image.
+         */
         public Bitmap getImage() {return image;}
+        /**
+         * Returns the index.
+         * <p>
+         * Returns the index.
+         */
         public long getId() { return index; }
     }
 
     /*
      * Amol Suryawanshi (Apr 22 '16 at 10:28). converting Java bitmap to byte array [Webpage]. Retrieved from
      * https://stackoverflow.com/questions/4989182/converting-java-bitmap-to-byte-array
+     */
+    /**
+     * Converts the passed in Bitmap to a String.
+     * <p>
+     * Converts the passed in Bitmap to a String.
+     * @param image Bitmap image to be converted.
      */
     public static String encodeTobase64(Bitmap image)
     {
@@ -531,11 +637,22 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
      * Amol Suryawanshi (Apr 22 '16 at 10:28). converting Java bitmap to byte array [Webpage]. Retrieved from
      * https://stackoverflow.com/questions/4989182/converting-java-bitmap-to-byte-array
      */
-    public static Bitmap decodeBase64(String input) {
+    /**
+     * Converts the passed in String to a Bitmap.
+     * <p>
+     * Converts the passed in String to a Bitmap.
+     * @param input String image to be converted.
+     */
+    public static Bitmap decodeBase64(String input)
+    {
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
-
+    /**
+     * Gets the EditText data from the screen and calls saveSharedPrefs.
+     * <p>
+     * Gets the EditText data from the screen and calls saveSharedPrefs.
+     */
     @Override
     protected void onPause()
     {
@@ -548,14 +665,25 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         String rad = radTex.getText().toString();
         saveSharedPrefs(rad, radiusKey);
     }
-
+    /**
+     * Saves the String into SharedPreferences
+     * <p>
+     * Saves the String into SharedPreferences
+     * @param stringToSave The string to be saved into SharedPreferences.
+     * @param key The key to wrap the stringToSave.
+     */
     public void saveSharedPrefs(String stringToSave, String key)
     {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(key, stringToSave);
         editor.apply();
     }
-
+    /**
+     * Inflate the menu items for use in the action bar
+     * <p>
+     * Manages the search function in the action bar.
+     * @param menu The menu used in the action bar.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
@@ -581,7 +709,12 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
 
         return true;
     }
-
+    /**
+     * Navigates to the selected activity.
+     * <p>
+     * Based on the menu item click.
+     * @param item The menu used in the action bar.
+     */
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -614,7 +747,12 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         }
         return false;
     }
-
+    /**
+     * Navigates to the selected activity.
+     * <p>
+     * Based on the menu item click.
+     * @param item The menu used in the action bar.
+     */
     // Needed for the OnNavigationItemSelected interface:
     @SuppressLint("NonConstantResourceId")
     @Override

@@ -54,4 +54,6 @@
     <string name="ticketMasterHelp">Enter a the name of the city you wish to search.  Enter a radius in miles to extend the search outside the city.</string>
     <string name="ok">OK</string>
     <string name="ticketMasterHelpTitle">SEARCH FOR TICKETMASTER EVENTS</string>
+    <string name="do_delete">Event Deletion</string>
+    <string name="deletSure">Are you sure you would like to delete this event?</string>
 </resources>
