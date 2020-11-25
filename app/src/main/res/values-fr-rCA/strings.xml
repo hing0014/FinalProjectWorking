@@ -35,5 +35,13 @@
     <string name="urlChoice">Souhaitez-vous ouvrir la page de l\'événement dans votre navigateur?</string>
     <string name="InvalidRadious">RAYON INVALIDE: veuillez saisir un nombre entier.</string>
     <string name="datNotFound">Données introuvables.</string>
+    <string name="Version">1.0</string>
+    <string name="groupName">Chris Hing, Jihyun Park, Kasia Kuzma, Mohamed Ahmed</string>
+    <string name="homeButton">Accueil</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="help">Aidez-moi</string>
+    <string name="ticketMasterHelp">Saisissez le nom d\'une ville pour rechercher des événements TicketMaster. Entrez un rayon en miles pour étendre la recherche en dehors de la ville.</string>
+    <string name="ok">D\'accord</string>
 
 </resources>

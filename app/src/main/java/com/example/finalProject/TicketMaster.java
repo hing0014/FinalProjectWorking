@@ -1,6 +1,7 @@
 package com.example.finalProject;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -9,11 +10,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
@@ -24,10 +29,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
@@ -56,7 +68,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version 1.0
  * @author Chris HIng
  */
-public class TicketMaster extends AppCompatActivity
+public class TicketMaster extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
     /**
      * Fields for storing the database information for use throughout the class.
@@ -109,6 +121,16 @@ public class TicketMaster extends AppCompatActivity
         FrameLayout frame = findViewById(R.id.frame);
         if(frame != null) isTablet = true;
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
+                drawer, toolbar, R.string.open, R.string.close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
         theBar = findViewById(R.id.loadBar);
         theBar.setVisibility(View.INVISIBLE);
         ListView myList = findViewById(R.id.theListView);
@@ -124,12 +146,19 @@ public class TicketMaster extends AppCompatActivity
         String radText = prefs.getString(radiusKey, "");
         radiusText.setText(radText);
 
+        myList.setAdapter(myAdapter = new TicketMasterListAdapter());
         if(events.size() != 0)
         {
-            cityText.setText(events.get(0).getCity());
             myAdapter.notifyDataSetChanged();
         }
-        myList.setAdapter(myAdapter = new TicketMasterListAdapter());
+
+        Button helpButton = findViewById(R.id.help);
+        helpButton.setOnClickListener(click ->
+        {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle(getResources().getString(R.string.ticketMasterHelp))
+                    .setPositiveButton(getResources().getString(R.string.ok), (clk, arg) -> { }).create().show();
+        });
 
         Button searchButton = findViewById(R.id.searchButton);
         AtomicReference<TicketMasterQuery> tickQuer = new AtomicReference<>(new TicketMasterQuery());
@@ -420,29 +449,27 @@ public class TicketMaster extends AppCompatActivity
                 TicketMasterOpener.COL_MAX_PRICE,
                 TicketMasterOpener.COL_IMAGE_STRING,
                 TicketMasterOpener.COL_URL};
-        try(Cursor results = dataBase.query(false, TicketMasterOpener.TABLE_NAME, columns, null, null, null, null, null, null))
-        {
-            int cityColumnIndex = results.getColumnIndex(TicketMasterOpener.COL_CITY);
-            int eventNameColIndex = results.getColumnIndex(TicketMasterOpener.COL_EVENT_NAME);
-            int startDateColIndex = results.getColumnIndex(TicketMasterOpener.COL_START_DATE);
-            int minPriceColIndex = results.getColumnIndex(TicketMasterOpener.COL_MIN_PRICE);
-            int maxPriceColIndex = results.getColumnIndex(TicketMasterOpener.COL_MAX_PRICE);
-            int urlColIndex = results.getColumnIndex(TicketMasterOpener.COL_URL);
-            int imageStringColIndex = results.getColumnIndex(TicketMasterOpener.COL_IMAGE_STRING);
-            int idColIndex = results.getColumnIndex(TicketMasterOpener.COL_ID);
-            while(results.moveToNext())
-            {
-                String city = results.getString(cityColumnIndex);
-                String eventName = results.getString(eventNameColIndex);
-                String startDate = results.getString(startDateColIndex);
-                double minPrice = Double.parseDouble(results.getString(minPriceColIndex));
-                double maxPrice = Double.parseDouble(results.getString(maxPriceColIndex));
-                String url = results.getString(urlColIndex);
-                Bitmap imageDecoded = decodeBase64(results.getString(imageStringColIndex));
-                long id = results.getLong(idColIndex);
-                events.add(new TicketEvent(city, eventName, startDate, minPrice, maxPrice, url, imageDecoded, id));
-            }
+        Cursor results = dataBase.query(false, TicketMasterOpener.TABLE_NAME, columns, null, null, null, null, null, null);
 
+        int cityColumnIndex = results.getColumnIndex(TicketMasterOpener.COL_CITY);
+        int eventNameColIndex = results.getColumnIndex(TicketMasterOpener.COL_EVENT_NAME);
+        int startDateColIndex = results.getColumnIndex(TicketMasterOpener.COL_START_DATE);
+        int minPriceColIndex = results.getColumnIndex(TicketMasterOpener.COL_MIN_PRICE);
+        int maxPriceColIndex = results.getColumnIndex(TicketMasterOpener.COL_MAX_PRICE);
+        int urlColIndex = results.getColumnIndex(TicketMasterOpener.COL_URL);
+        int imageStringColIndex = results.getColumnIndex(TicketMasterOpener.COL_IMAGE_STRING);
+        int idColIndex = results.getColumnIndex(TicketMasterOpener.COL_ID);
+        while(results.moveToNext())
+        {
+            String city = results.getString(cityColumnIndex);
+            String eventName = results.getString(eventNameColIndex);
+            String startDate = results.getString(startDateColIndex);
+            double minPrice = Double.parseDouble(results.getString(minPriceColIndex));
+            double maxPrice = Double.parseDouble(results.getString(maxPriceColIndex));
+            String url = results.getString(urlColIndex);
+            Bitmap imageDecoded = decodeBase64(results.getString(imageStringColIndex));
+            long id = results.getLong(idColIndex);
+            events.add(new TicketEvent(city, eventName, startDate, minPrice, maxPrice, url, imageDecoded, id));
         }
     }
 
@@ -524,5 +551,99 @@ public class TicketMaster extends AppCompatActivity
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(key, stringToSave);
         editor.apply();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.example_menu, menu);
+
+        /* slide 15 material:*/
+        MenuItem searchItem = menu.findItem(R.id.search_item);
+        SearchView sView = (SearchView)searchItem.getActionView();
+        sView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String query)
+            {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText)
+            {
+                return false;
+            }
+        });
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        Intent pageChange;
+        switch(item.getItemId())
+        {
+            case R.id.home:
+                pageChange = new Intent(TicketMaster.this, MainActivity.class);
+                startActivity(pageChange);
+                break;
+            case R.id.ticket:
+                pageChange = new Intent(TicketMaster.this, TicketMaster.class);
+                startActivity(pageChange);
+                break;
+            case R.id.food:
+                pageChange = new Intent(TicketMaster.this, RecipeSearchPage.class);
+                startActivity(pageChange);
+                break;
+            case R.id.audio:
+                pageChange = new Intent(TicketMaster.this, AudioActivity.class);
+                startActivity(pageChange);
+                break;
+            case R.id.bacteria:
+                pageChange = new Intent(TicketMaster.this, Covid.class);
+                startActivity(pageChange);
+                break;
+            case R.id.search_item:
+                break;
+        }
+        return false;
+    }
+
+
+    // Needed for the OnNavigationItemSelected interface:
+    @Override
+    public boolean onNavigationItemSelected( MenuItem item) {
+
+        Intent pageChange;
+        switch(item.getItemId())
+        {
+            case R.id.home:
+                pageChange = new Intent(TicketMaster.this, MainActivity.class);
+                startActivity(pageChange);
+                break;
+            case R.id.ticket:
+                pageChange = new Intent(TicketMaster.this, TicketMaster.class);
+                startActivity(pageChange);
+                break;
+            case R.id.food:
+                pageChange = new Intent(TicketMaster.this, RecipeSearchPage.class);
+                startActivity(pageChange);
+                break;
+            case R.id.audio:
+                pageChange = new Intent(TicketMaster.this, AudioActivity.class);
+                startActivity(pageChange);
+                break;
+            case R.id.bacteria:
+                pageChange = new Intent(TicketMaster.this, Covid.class);
+                startActivity(pageChange);
+                break;
+            case R.id.search_item:
+                break;
+        }
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return false;
     }
 }

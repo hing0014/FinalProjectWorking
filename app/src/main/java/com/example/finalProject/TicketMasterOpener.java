@@ -22,10 +22,10 @@ public class TicketMasterOpener extends SQLiteOpenHelper
     protected final static int VERSION_NUM = 1;
     public final static String TABLE_NAME = "EVENTS";
     public final static String COL_CITY = "CITY";
-    public final static String COL_EVENT_NAME = "EVENT NAME";
-    public final static String COL_START_DATE = "START DATE";
-    public final static String COL_MIN_PRICE = "MIN PRICE";
-    public final static String COL_MAX_PRICE = "MAX PRICE";
+    public final static String COL_EVENT_NAME = "EVENT_NAME";
+    public final static String COL_START_DATE = "START_DATE";
+    public final static String COL_MIN_PRICE = "MIN_PRICE";
+    public final static String COL_MAX_PRICE = "MAX_PRICE";
     public final static String COL_URL = "URL";
     public final static String COL_IMAGE_STRING = "IMAGE";
     public final static String COL_ID = "_id";
@@ -52,13 +52,13 @@ public class TicketMasterOpener extends SQLiteOpenHelper
     public void onCreate(SQLiteDatabase db)
     {
         db.execSQL("CREATE TABLE " + TABLE_NAME + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COL_CITY + " CITY, "
-                + COL_EVENT_NAME + " EVENT NAME, "
-                + COL_START_DATE + " START DATE, "
-                + COL_MIN_PRICE + " MIN PRICE, "
-                + COL_MAX_PRICE + " MAX PRICE, "
-                + COL_IMAGE_STRING + " IMAGE, "
-                + COL_URL  + " URL);");
+                + COL_CITY + " text, "
+                + COL_EVENT_NAME + " text, "
+                + COL_START_DATE + " text, "
+                + COL_MIN_PRICE + " text, "
+                + COL_MAX_PRICE + " text, "
+                + COL_IMAGE_STRING + " text, "
+                + COL_URL  + " text);");
     }
 
     /**

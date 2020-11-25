@@ -45,4 +45,12 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="datNotFound">Data not found.</string>
+    <string name="Version">1.0</string>
+    <string name="groupName">Chris Hing, Jihyun Park, Kasia Kuzma, Mohamed Ahmed</string>
+    <string name="homeButton">Home</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="help">help</string>
+    <string name="ticketMasterHelp">Enter a the name of a city to search for TicketMaster events. Enter a radius in miles to extend the search outside the city.</string>
+    <string name="ok">OK</string>
 </resources>
