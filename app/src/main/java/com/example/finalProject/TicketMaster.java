@@ -136,12 +136,12 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         ListView myList = findViewById(R.id.theListView);
         loadDataFromDatabase();
 
-        EditText cityText = (EditText) findViewById(R.id.citySearch);
+        EditText cityText = findViewById(R.id.citySearch);
         prefs = getSharedPreferences("file", Context.MODE_PRIVATE);
         String prefCity = prefs.getString(cityKey, "");
         cityText.setText(prefCity);
 
-        EditText radiusText = (EditText) findViewById(R.id.radius);
+        EditText radiusText =  findViewById(R.id.radius);
         prefs = getSharedPreferences("file", Context.MODE_PRIVATE);
         String radText = prefs.getString(radiusKey, "");
         radiusText.setText(radText);
@@ -343,7 +343,7 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
 
                     events.add(new TicketEvent(city, eventName, startDate, ticketPriceMin, ticketPriceMax, eventUrl, image, newId));
                     Log.i("Event Created", "Event name: " + eventName);
-                    int inpars = (int)((i+1)*100)/eventArrayLength;
+                    int inpars = ((i+1)*100)/eventArrayLength;
                     publishProgress(inpars);
                 }
             }
@@ -473,6 +473,7 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
             long id = results.getLong(idColIndex);
             events.add(new TicketEvent(city, eventName, startDate, minPrice, maxPrice, url, imageDecoded, id));
         }
+        results.close();
     }
 
     private static class TicketEvent
@@ -539,11 +540,11 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
     protected void onPause()
     {
         super.onPause();
-        EditText citTex =  (EditText) findViewById(R.id.citySearch);
+        EditText citTex =  findViewById(R.id.citySearch);
         String cit = citTex.getText().toString();
         saveSharedPrefs(cit, cityKey);
 
-        EditText radTex =  (EditText) findViewById(R.id.radius);
+        EditText radTex =   findViewById(R.id.radius);
         String rad = radTex.getText().toString();
         saveSharedPrefs(rad, radiusKey);
     }
@@ -613,7 +614,6 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         }
         return false;
     }
-
 
     // Needed for the OnNavigationItemSelected interface:
     @SuppressLint("NonConstantResourceId")
