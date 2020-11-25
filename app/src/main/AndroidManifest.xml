@@ -28,7 +28,6 @@
         </activity>
         <activity android:name=".RecipeSearchPage" />
         <activity android:name=".AudioActivity" /> <!-- <activity android:name=".ChatRoomActivity" /> -->
-        <activity android:name=".TicketDetails" />
         <activity android:name=".Covid" />
         <activity android:name=".TicketMaster" />
         <activity android:name=".CovidDetails"/>

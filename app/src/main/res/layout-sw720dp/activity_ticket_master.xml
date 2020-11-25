@@ -1,85 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
 
-    <RelativeLayout
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/layout"
-        tools:ignore="UseSwitchCompatOrMaterialXml">
-
-        <TextView
-            android:id="@+id/cSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:text="@string/city_search" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_toStartOf="@+id/searchButton"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/cSearch"
-            android:id="@+id/citySearch"
-            android:textSize="30sp"
-            android:autofillHints="@string/city_search"
-            android:inputType="text"
-            tools:ignore="LabelFor" />
-
-        <TextView
-            android:id="@+id/rSearch"
-            android:layout_width="wrap_content"
-            android:layout_height="20dp"
-            android:layout_below="@id/citySearch"
-            android:text="@string/radius_search" />
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_below="@id/rSearch"
-            android:layout_toStartOf="@+id/searchButton"
-            android:layout_alignParentStart="true"
-            android:id="@+id/radius"
-            android:textSize="30sp"
-            android:autofillHints="@string/radius_search"
-            android:inputType="text"
-            tools:ignore="LabelFor" />
-
-        <Button
-            android:id="@+id/searchButton"
-            android:layout_width="wrap_content"
-            android:layout_height="140dp"
-            android:layout_alignParentTop="true"
-            android:text="@string/SearchButtonText"
-            android:layout_alignParentEnd="true"
-            />
-        <ListView
-            android:id="@+id/theListView"
-            android:layout_width="400dp"
-            android:layout_height="fill_parent"
-            android:layout_above="@+id/loadBar"
-            android:layout_below="@+id/searchButton"
-            />
-
-        <ProgressBar
-            android:id="@+id/loadBar"
+        tools:openDrawer="start">
+        <!-- THIS IS WHAT IS VISIBLE ON SCREEN:-->
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_alignParentBottom="true"
-            />
+            android:layout_height="match_parent"
+            android:id="@+id/layout"
+            tools:ignore="UseSwitchCompatOrMaterialXml">
 
-        <FrameLayout
-            android:id="@+id/frame"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/radius"
-            android:layout_above="@+id/loadBar"
-            android:layout_toEndOf="@+id/theListView"/>
+            <TextView
+                android:id="@+id/cSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:text="@string/city_search" />
 
-    </RelativeLayout>
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_toStartOf="@+id/searchButton"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/cSearch"
+                android:id="@+id/citySearch"
+                android:textSize="30sp"
+                android:autofillHints="@string/city_search"
+                android:inputType="text"
+                tools:ignore="LabelFor" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/rSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_below="@id/citySearch"
+                android:text="@string/radius_search" />
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/rSearch"
+                android:layout_toStartOf="@+id/searchButton"
+                android:layout_alignParentStart="true"
+                android:id="@+id/radius"
+                android:textSize="30sp"
+                android:autofillHints="@string/radius_search"
+                android:inputType="text"
+                tools:ignore="LabelFor" />
+
+            <Button
+                android:id="@+id/help"
+                android:layout_width="200sp"
+                android:layout_height="40sp"
+                android:layout_alignParentTop="true"
+                android:text="@string/help"
+                android:layout_alignParentEnd="true"
+                />
+            <Button
+                android:id="@+id/searchButton"
+                android:layout_width="200sp"
+                android:layout_height="100sp"
+                android:layout_below="@+id/help"
+                android:text="@string/SearchButtonText"
+                android:layout_alignParentEnd="true"
+                />
+            <ListView
+                android:id="@+id/theListView"
+                android:layout_width="400dp"
+                android:layout_height="fill_parent"
+                android:layout_above="@+id/loadBar"
+                android:layout_below="@+id/searchButton"
+                />
+
+            <ProgressBar
+                android:id="@+id/loadBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_alignParentBottom="true"
+                />
+
+            <FrameLayout
+                android:id="@+id/frame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/radius"
+                android:layout_above="@+id/loadBar"
+                android:layout_toEndOf="@+id/theListView"/>
+
+        </RelativeLayout>
+
+    <!-- THIS IS WHAT IS WHAT POPS OUT FROM THE SIDE:-->
+    <com.google.android.material.navigation.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/header_layout"
+        app:menu="@menu/example_menu"
+        android:id="@+id/nav_view"/>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+</LinearLayout>

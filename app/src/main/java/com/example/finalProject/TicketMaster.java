@@ -1,6 +1,7 @@
 package com.example.finalProject;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,9 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
@@ -24,10 +28,17 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
@@ -56,14 +67,16 @@ import java.util.concurrent.atomic.AtomicReference;
  * @version 1.0
  * @author Chris HIng
  */
-public class TicketMaster extends AppCompatActivity
+public class TicketMaster extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
     /**
      * Fields for storing the database information for use throughout the class.
      */
     private SharedPreferences prefs = null;
+    FragmentTicketDetails dFragment = null;
     private ArrayList<TicketEvent> events = new ArrayList<>();
     private TicketMasterListAdapter myAdapter;
+    FrameLayout frame;
     private ProgressBar theBar;
     String city;
     String cityKey = "city";
@@ -106,30 +119,49 @@ public class TicketMaster extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ticket_master);
 
-        FrameLayout frame = findViewById(R.id.frame);
-        if(frame != null) isTablet = true;
+        frame = findViewById(R.id.frame);
+        if(frame != null)isTablet = true;
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
+                drawer, toolbar, R.string.open, R.string.close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
         theBar = findViewById(R.id.loadBar);
         theBar.setVisibility(View.INVISIBLE);
         ListView myList = findViewById(R.id.theListView);
         loadDataFromDatabase();
 
-        EditText cityText = (EditText) findViewById(R.id.citySearch);
+        EditText cityText = findViewById(R.id.citySearch);
         prefs = getSharedPreferences("file", Context.MODE_PRIVATE);
         String prefCity = prefs.getString(cityKey, "");
         cityText.setText(prefCity);
 
-        EditText radiusText = (EditText) findViewById(R.id.radius);
+        EditText radiusText =  findViewById(R.id.radius);
         prefs = getSharedPreferences("file", Context.MODE_PRIVATE);
         String radText = prefs.getString(radiusKey, "");
         radiusText.setText(radText);
 
+        myList.setAdapter(myAdapter = new TicketMasterListAdapter());
         if(events.size() != 0)
         {
-            cityText.setText(events.get(0).getCity());
             myAdapter.notifyDataSetChanged();
         }
-        myList.setAdapter(myAdapter = new TicketMasterListAdapter());
+
+        Button helpButton = findViewById(R.id.help);
+        helpButton.setOnClickListener(click ->
+        {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this, R.style.dialogWrap);
+            alertDialogBuilder.setTitle(R.string.ticketMasterHelpTitle)
+                    .setPositiveButton(getResources().getString(R.string.ok), (clk, arg) -> { });
+            alertDialogBuilder.setMessage(R.string.ticketMasterHelp)
+                    .create().show();
+        });
 
         Button searchButton = findViewById(R.id.searchButton);
         AtomicReference<TicketMasterQuery> tickQuer = new AtomicReference<>(new TicketMasterQuery());
@@ -172,7 +204,7 @@ public class TicketMaster extends AppCompatActivity
 
             if(isTablet)
             {
-                FragmentTicketDetails dFragment = new FragmentTicketDetails(); //add a DetailFragment
+                dFragment = new FragmentTicketDetails(); //add a DetailFragment
                 dFragment.setArguments( dataToPass ); //pass it a bundle for information
                 getSupportFragmentManager()
                         .beginTransaction()
@@ -185,6 +217,26 @@ public class TicketMaster extends AppCompatActivity
                 nextActivity.putExtras(dataToPass); //send data to next activity
                 startActivity(nextActivity); //make the transition
             }
+        });
+
+        myList.setOnItemLongClickListener( (parent, view, pos, id) -> {
+
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle(getResources().getString(R.string.do_delete)).setMessage(R.string.deletSure)
+                    .setPositiveButton("Yes", (click, arg) ->
+                    {
+                        TicketEvent selectedEvent = events.get(pos);
+                        deleteEvent(selectedEvent);
+                        events.remove(pos);
+                        if(isTablet)
+                        {
+                            frame.removeAllViews();
+                        }
+                        myAdapter.notifyDataSetChanged();
+                    })
+                    .setNegativeButton("No", (click, arg) -> {  })
+                    .create().show();
+            return true;
         });
     }
 
@@ -312,14 +364,13 @@ public class TicketMaster extends AppCompatActivity
 
                     events.add(new TicketEvent(city, eventName, startDate, ticketPriceMin, ticketPriceMax, eventUrl, image, newId));
                     Log.i("Event Created", "Event name: " + eventName);
-                    int inpars = (int)((i+1)*100)/eventArrayLength;
+                    int inpars = ((i+1)*100)/eventArrayLength;
                     publishProgress(inpars);
                 }
             }
-            catch (Exception e)
+            catch (Exception ignored)
             {
-                dataNotFound = true;
-                return "City Not Found";
+
             }
             publishProgress(100);
             return "Completed Success";
@@ -374,17 +425,34 @@ public class TicketMaster extends AppCompatActivity
      */
     private class TicketMasterListAdapter extends BaseAdapter
     {
-
+        /**
+         * Returns the size of the events ArrayList.
+         * <p>
+         * If events is null, return 0.
+         * Else return the size of events.
+         */
         public int getCount()
         {
             if(events == null) return 0;
             return events.size();
         }
-
+        /**
+         * Returns the Object position of the passed in int position.
+         * <p>
+         * Converts the int to an object.
+         */
         public Object getItem(int position){return position;}
-
+        /**
+         * Returns the long position of the passed in int position.
+         * <p>
+         * Converts the int to a long.
+         */
         public long getItemId(int position) { return position; }
-
+        /**
+         * Returns the view to be added into the ListView.
+         * <p>
+         * Adds the data into each view, then passes the view to be added to the ListView.
+         */
         public View getView(int position, View view, ViewGroup parent)
         {
             TicketEvent arEl = events.get(position);
@@ -420,32 +488,51 @@ public class TicketMaster extends AppCompatActivity
                 TicketMasterOpener.COL_MAX_PRICE,
                 TicketMasterOpener.COL_IMAGE_STRING,
                 TicketMasterOpener.COL_URL};
-        try(Cursor results = dataBase.query(false, TicketMasterOpener.TABLE_NAME, columns, null, null, null, null, null, null))
+        Cursor results = dataBase.query(false, TicketMasterOpener.TABLE_NAME, columns, null, null, null, null, null, null);
+
+        int cityColumnIndex = results.getColumnIndex(TicketMasterOpener.COL_CITY);
+        int eventNameColIndex = results.getColumnIndex(TicketMasterOpener.COL_EVENT_NAME);
+        int startDateColIndex = results.getColumnIndex(TicketMasterOpener.COL_START_DATE);
+        int minPriceColIndex = results.getColumnIndex(TicketMasterOpener.COL_MIN_PRICE);
+        int maxPriceColIndex = results.getColumnIndex(TicketMasterOpener.COL_MAX_PRICE);
+        int urlColIndex = results.getColumnIndex(TicketMasterOpener.COL_URL);
+        int imageStringColIndex = results.getColumnIndex(TicketMasterOpener.COL_IMAGE_STRING);
+        int idColIndex = results.getColumnIndex(TicketMasterOpener.COL_ID);
+        while(results.moveToNext())
         {
-            int cityColumnIndex = results.getColumnIndex(TicketMasterOpener.COL_CITY);
-            int eventNameColIndex = results.getColumnIndex(TicketMasterOpener.COL_EVENT_NAME);
-            int startDateColIndex = results.getColumnIndex(TicketMasterOpener.COL_START_DATE);
-            int minPriceColIndex = results.getColumnIndex(TicketMasterOpener.COL_MIN_PRICE);
-            int maxPriceColIndex = results.getColumnIndex(TicketMasterOpener.COL_MAX_PRICE);
-            int urlColIndex = results.getColumnIndex(TicketMasterOpener.COL_URL);
-            int imageStringColIndex = results.getColumnIndex(TicketMasterOpener.COL_IMAGE_STRING);
-            int idColIndex = results.getColumnIndex(TicketMasterOpener.COL_ID);
-            while(results.moveToNext())
-            {
-                String city = results.getString(cityColumnIndex);
-                String eventName = results.getString(eventNameColIndex);
-                String startDate = results.getString(startDateColIndex);
-                double minPrice = Double.parseDouble(results.getString(minPriceColIndex));
-                double maxPrice = Double.parseDouble(results.getString(maxPriceColIndex));
-                String url = results.getString(urlColIndex);
-                Bitmap imageDecoded = decodeBase64(results.getString(imageStringColIndex));
-                long id = results.getLong(idColIndex);
-                events.add(new TicketEvent(city, eventName, startDate, minPrice, maxPrice, url, imageDecoded, id));
-            }
-
+            String city = results.getString(cityColumnIndex);
+            String eventName = results.getString(eventNameColIndex);
+            String startDate = results.getString(startDateColIndex);
+            double minPrice = Double.parseDouble(results.getString(minPriceColIndex));
+            double maxPrice = Double.parseDouble(results.getString(maxPriceColIndex));
+            String url = results.getString(urlColIndex);
+            Bitmap imageDecoded = decodeBase64(results.getString(imageStringColIndex));
+            long id = results.getLong(idColIndex);
+            events.add(new TicketEvent(city, eventName, startDate, minPrice, maxPrice, url, imageDecoded, id));
         }
+        results.close();
     }
-
+    /**
+     * Removes an item from the database.
+     * <p>
+     * Removes the passed in ticket event item from the database.
+     *
+     * @param c TicketEvent object to be removed from the database.
+     */
+    protected void deleteEvent(TicketEvent c)
+    {
+        dataBase.delete(TicketMasterOpener.TABLE_NAME, TicketMasterOpener.COL_ID + "= ?", new String[] {Long.toString(c.getId())});
+    }
+    /**
+     * TicketEvent holds the data for a single TicketMaster event.
+     *  <p>
+     * Course Name: CST8288_010
+     * Class name: TicketEvent
+     * Date: November 25, 2020
+     *
+     * @version 1.0
+     * @author Chris HIng
+     */
     private static class TicketEvent
     {
         String city;
@@ -456,7 +543,11 @@ public class TicketMaster extends AppCompatActivity
         String url;
         long index;
         Bitmap image;
-
+        /**
+         * Constructor for the TicketEvent.
+         * <p>
+         * uses the passed in values to instantiate a new TicketEvent object.
+         */
         private TicketEvent(String city, String eventName, String startDate, double ticketPriceMin, double ticketPriceMax, String url, Bitmap image, long index)
         {
             this.city = city;
@@ -468,26 +559,71 @@ public class TicketMaster extends AppCompatActivity
             this.index = index;
             this.image = image;
         }
-
+        /**
+         * Returns the city name.
+         * <p>
+         * Returns the city name.
+         */
         public String getCity()
         {
             return city;
         }
+        /**
+         * Returns the event Name.
+         * <p>
+         * Returns the event Name.
+         */
         public String getEventName()
         {
             return eventName;
         }
+        /**
+         * Returns the start date.
+         * <p>
+         * Returns the start date.
+         */
         public String getStartDate(){ return startDate; }
+        /**
+         * Returns the minimum ticket price.
+         * <p>
+         * Returns the minimum ticket price.
+         */
         public double getTicketPriceMin(){ return ticketPriceMin; }
+        /**
+         * Returns the maximum ticket price.
+         * <p>
+         * Returns the maximum ticket price.
+         */
         public double getTicketPriceMax(){ return ticketPriceMax; }
+        /**
+         * Returns the url.
+         * <p>
+         * Returns the url.
+         */
         public String getUrl(){ return url; }
+        /**
+         * Returns the image.
+         * <p>
+         * Returns the image.
+         */
         public Bitmap getImage() {return image;}
+        /**
+         * Returns the index.
+         * <p>
+         * Returns the index.
+         */
         public long getId() { return index; }
     }
 
     /*
      * Amol Suryawanshi (Apr 22 '16 at 10:28). converting Java bitmap to byte array [Webpage]. Retrieved from
      * https://stackoverflow.com/questions/4989182/converting-java-bitmap-to-byte-array
+     */
+    /**
+     * Converts the passed in Bitmap to a String.
+     * <p>
+     * Converts the passed in Bitmap to a String.
+     * @param image Bitmap image to be converted.
      */
     public static String encodeTobase64(Bitmap image)
     {
@@ -501,28 +637,155 @@ public class TicketMaster extends AppCompatActivity
      * Amol Suryawanshi (Apr 22 '16 at 10:28). converting Java bitmap to byte array [Webpage]. Retrieved from
      * https://stackoverflow.com/questions/4989182/converting-java-bitmap-to-byte-array
      */
-    public static Bitmap decodeBase64(String input) {
+    /**
+     * Converts the passed in String to a Bitmap.
+     * <p>
+     * Converts the passed in String to a Bitmap.
+     * @param input String image to be converted.
+     */
+    public static Bitmap decodeBase64(String input)
+    {
         byte[] decodedByte = Base64.decode(input, 0);
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
-
+    /**
+     * Gets the EditText data from the screen and calls saveSharedPrefs.
+     * <p>
+     * Gets the EditText data from the screen and calls saveSharedPrefs.
+     */
     @Override
     protected void onPause()
     {
         super.onPause();
-        EditText citTex =  (EditText) findViewById(R.id.citySearch);
+        EditText citTex =  findViewById(R.id.citySearch);
         String cit = citTex.getText().toString();
         saveSharedPrefs(cit, cityKey);
 
-        EditText radTex =  (EditText) findViewById(R.id.radius);
+        EditText radTex =   findViewById(R.id.radius);
         String rad = radTex.getText().toString();
         saveSharedPrefs(rad, radiusKey);
     }
-
+    /**
+     * Saves the String into SharedPreferences
+     * <p>
+     * Saves the String into SharedPreferences
+     * @param stringToSave The string to be saved into SharedPreferences.
+     * @param key The key to wrap the stringToSave.
+     */
     public void saveSharedPrefs(String stringToSave, String key)
     {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(key, stringToSave);
         editor.apply();
+    }
+    /**
+     * Inflate the menu items for use in the action bar
+     * <p>
+     * Manages the search function in the action bar.
+     * @param menu The menu used in the action bar.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.example_menu, menu);
+
+        /* slide 15 material:*/
+        MenuItem searchItem = menu.findItem(R.id.search_item);
+        SearchView sView = (SearchView)searchItem.getActionView();
+        sView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String query)
+            {
+                return false;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText)
+            {
+                return false;
+            }
+        });
+
+        return true;
+    }
+    /**
+     * Navigates to the selected activity.
+     * <p>
+     * Based on the menu item click.
+     * @param item The menu used in the action bar.
+     */
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        Intent pageChange;
+        switch(item.getItemId())
+        {
+            case R.id.home:
+                pageChange = new Intent(TicketMaster.this, MainActivity.class);
+                startActivity(pageChange);
+                break;
+            case R.id.ticket:
+                pageChange = new Intent(TicketMaster.this, TicketMaster.class);
+                startActivity(pageChange);
+                break;
+            case R.id.food:
+                pageChange = new Intent(TicketMaster.this, RecipeSearchPage.class);
+                startActivity(pageChange);
+                break;
+            case R.id.audio:
+                pageChange = new Intent(TicketMaster.this, AudioActivity.class);
+                startActivity(pageChange);
+                break;
+            case R.id.bacteria:
+                pageChange = new Intent(TicketMaster.this, Covid.class);
+                startActivity(pageChange);
+                break;
+            case R.id.search_item:
+                break;
+        }
+        return false;
+    }
+    /**
+     * Navigates to the selected activity.
+     * <p>
+     * Based on the menu item click.
+     * @param item The menu used in the action bar.
+     */
+    // Needed for the OnNavigationItemSelected interface:
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onNavigationItemSelected( MenuItem item) {
+
+        Intent pageChange;
+        switch(item.getItemId())
+        {
+            case R.id.home:
+                pageChange = new Intent(TicketMaster.this, MainActivity.class);
+                startActivity(pageChange);
+                break;
+            case R.id.ticket:
+                pageChange = new Intent(TicketMaster.this, TicketMaster.class);
+                startActivity(pageChange);
+                break;
+            case R.id.food:
+                pageChange = new Intent(TicketMaster.this, RecipeSearchPage.class);
+                startActivity(pageChange);
+                break;
+            case R.id.audio:
+                pageChange = new Intent(TicketMaster.this, AudioActivity.class);
+                startActivity(pageChange);
+                break;
+            case R.id.bacteria:
+                pageChange = new Intent(TicketMaster.this, Covid.class);
+                startActivity(pageChange);
+                break;
+            case R.id.search_item:
+                break;
+        }
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return false;
     }
 }
