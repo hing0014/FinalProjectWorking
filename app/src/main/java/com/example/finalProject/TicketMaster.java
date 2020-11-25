@@ -581,6 +581,7 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -615,6 +616,7 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
 
 
     // Needed for the OnNavigationItemSelected interface:
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected( MenuItem item) {
 
