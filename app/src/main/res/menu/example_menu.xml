@@ -4,7 +4,7 @@
 
     <item android:id="@+id/home"
         android:title="@string/homeButton"
-        android:icon="@drawable/home"
+        android:icon="@drawable/bacteria"
         android:orderInCategory="50"
         app:showAsAction="always"/>
 

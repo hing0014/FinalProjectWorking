@@ -56,4 +56,11 @@
     <string name="ticketMasterHelpTitle">SEARCH FOR TICKETMASTER EVENTS</string>
     <string name="do_delete">Event Deletion</string>
     <string name="deletSure">Are you sure you would like to delete this event?</string>
+    <string name="attention">attention</string>
+    <string name="home">You clicked to go Home</string>
+    <string name="ticket">You clicked to go to the TicketMaster</string>
+    <string name="audio"> You clicked to find to music</string>
+    <string name="covid">You clicked to get the information about status of the Covid-19</string>
+    <string name="recipe">You clicked to find the Recipe</string>
+    <string name="yesOrNo">"Click OK to continue, or Cancel to stop:"</string>
 </resources>

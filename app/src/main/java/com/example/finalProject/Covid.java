@@ -8,17 +8,17 @@
  */
 package com.example.finalProject;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -26,10 +26,22 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,7 +57,7 @@ import java.util.Date;
  *
  * @ author Jihyun Park
  **/
-public class Covid extends AppCompatActivity {
+public class Covid extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
 
     ArrayList<CovidEvent> list = new ArrayList<>();
     MyListAdapter myAdapter;
@@ -61,15 +73,19 @@ public class Covid extends AppCompatActivity {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
     String from = simpleDateFormat.format(new Date());
     String to = simpleDateFormat.format(new Date());
-
+    String stKey = "";
+    String fromKey = simpleDateFormat.format(new Date());
+    String toKey = simpleDateFormat.format(new Date());
     public final static String ITEM_COUNTRY = "COUNTRY";
     public final static String ITEM_CONCODE = "COUNTRY CODE";
     public final static String ITEM_PROVINCE = "PROVINCE";
     public final static String ITEM_CASE = "CASES";
     public final static String ITEM_STATUS = "STATUS";
+    private SharedPreferences prefs;
+
 
     /**
-     * When the button, Covid-19, of the main page, connected with this page. gdfdfdfhddffdfdf
+     * When the button, Covid-19, of the main page, connected with this page.
      * When the search button is clicked the search button, stored data is showed the covid table which in contained all information that user wants.
      *
      * @param savedInstanceState Bundle object used in the super call of onCreate.
@@ -84,30 +100,37 @@ public class Covid extends AppCompatActivity {
         myAdapter = new MyListAdapter();
         myList.setAdapter(myAdapter);
 
-      //  loadDataFromDatabase();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open, R.string.close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        //  loadDataFromDatabase();
 
         progressBar = findViewById(R.id.progressBar);
 
         CovidRequest req = new CovidRequest();
         fromText = findViewById(R.id.fromText);
-        toText= findViewById(R.id.toText);
+        toText = findViewById(R.id.toText);
         searchText = findViewById(R.id.searchText);
         searchButton = findViewById(R.id.magnify);
         searchButton.setOnClickListener((clk) ->
         {
             String searchWord = searchText.getText().toString();
-            String from= fromText.getText().toString();
-            String to=toText.getText().toString();
+            String from = fromText.getText().toString();
+            String to = toText.getText().toString();
 
-            if (! (from.equals(to))) {
+            if (!(from.equals(to))) {
                 req.execute("https://api.covid19api.com/country/" + searchWord + "/status/confirmed/live?from=" + from + "T00:00:00Z&to=" + to + "T00:00:00Z");
-            }
-            else {
+            } else {
                 Toast.makeText(this, R.string.searchText1, Toast.LENGTH_SHORT).show();
             }
 
         });
-        myList.setOnItemClickListener( (lv, item, position, id) -> {
+        myList.setOnItemClickListener((lv, item, position, id) -> {
 
             Bundle dataToPass = new Bundle();
             dataToPass.putString(ITEM_COUNTRY, list.get(position).country);
@@ -121,22 +144,46 @@ public class Covid extends AppCompatActivity {
             startActivity(nextActivity);
 
         });
-        myList.setOnItemLongClickListener((p, b, pos, id) -> {
-            Log.e("long clicked", "pos: " + pos);
 
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setTitle(R.string.warning).setMessage((getResources().getString(R.string.delete))+"\n" + (getResources().getString(R.string.norecover)))
-                    .setPositiveButton(R.string.yes, (click, arg) -> {
-                        list.remove(pos);
-                        CovidDB.delete(covidOpener.TABLE_NAME, CovidOpener.COL_CASE + "= ?", new String[]{Long.toString(id)});
-                        myAdapter.notifyDataSetChanged();
-                    })
-                    .setNegativeButton(R.string.no, (click, arg) -> {
-                    })
-                    .create().show();
+    }
 
-            return true;
-        });
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.home:
+                Intent pageChange = new Intent(this, MainActivity.class);
+                startActivity(pageChange);
+                break;
+
+            case R.id.ticket:
+                // message=" You clicked to go to the TicketMaster";
+                Intent pageChange2 = new Intent(this, TicketMaster.class);
+                startActivity(pageChange2);
+                break;
+
+            case R.id.food:
+                //message=" You clicked to find the Recipe";
+                Intent pageChange3 = new Intent(this, RecipeSearchPage.class);
+                startActivity(pageChange3);
+                break;
+
+            case R.id.audio:
+                //message=" You clicked to find to music";
+                Intent pageChange4 = new Intent(this, AudioActivity.class);
+                startActivity(pageChange4);
+                break;
+
+            case R.id.bacteria:
+                //message=" You clicked to get the information about status of the Covid-19";
+
+                break;
+
+            case R.id.search_item:
+                //message=" You clicked to find information";
+                break;
+        }
+             return false;
     }
 
     /*
@@ -191,6 +238,7 @@ public class Covid extends AppCompatActivity {
             View newView = inflater.inflate(R.layout.covid_row_layout, parent, false);
 
             TextView tView = newView.findViewById(R.id.searchText);
+            myAdapter.notifyDataSetChanged();
             tView.setText(getItem(position).toString());
             return newView;
         }
@@ -226,12 +274,12 @@ public class Covid extends AppCompatActivity {
          */
         @Override
         public String doInBackground(String... args) {
-            String searchWord= searchText.getText().toString();
-            String from= fromText.getText().toString();
-            String to=toText.getText().toString();
+            String searchWord = searchText.getText().toString();
+            String from = fromText.getText().toString();
+            String to = toText.getText().toString();
 
             try {
-                URL url = new URL("https://api.covid19api.com/country/"+searchWord+"/status/confirmed/live?from="+from+"T00:00:00Z&to="+to);
+                URL url = new URL("https://api.covid19api.com/country/" + searchWord + "/status/confirmed/live?from=" + from + "T00:00:00Z&to=" + to);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
 
                 InputStream response = urlConnection.getInputStream();
@@ -263,6 +311,7 @@ public class Covid extends AppCompatActivity {
                     newRowValues.put(covidOpener.COL_STATUS, status);
 
                     list.add(new CovidEvent(country, countryCode, province, cases, status));
+
                 }
 
             } catch (Exception e) {
@@ -330,42 +379,171 @@ public class Covid extends AppCompatActivity {
             list.add(new CovidEvent(country, countryCode, province, cases, status));
         }
     }
-}
-/*
- * this is the class of the basic information of the related Covid Event
- * @author: Jihyun Park
- * */
 
-class CovidEvent {
-    String country;
-    String countryCode;
-    String province;
-    double cases;
-    String status;
+    /*
+     * when searched text, it will store at SharedPreference automatically
+     * Searched Text could be country name, country code, province name.
+     * */
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        EditText edsearchText = findViewById(R.id.searchText);
+//        String st = edsearchText.getText().toString();
+//        saveSharedPrefs(st, stKey);
+//
+//        EditText edfr = findViewById(R.id.fromText);
+//        String storedFrom = edfr.getText().toString();
+//        saveSharedPrefs(storedFrom, fromKey);
+//
+//        EditText edTo = findViewById(R.id.toText);
+//        String storedTo = edTo.getText().toString();
+//        saveSharedPrefs(storedTo, toKey);
+//}
 
-    /* This is the class of the covid event
-     * @param String type is country, countryCode, province, status and double typs is cases
-     * @Author Jihyun Park*/
-    public CovidEvent(String country, String countryCode, String province, double cases, String status) {
-        this.country = country;
-        this.countryCode = countryCode;
-        this.province = province;
-        this.cases = cases;
-        this.status = status;
+    /**
+     * @param stringToSave will be stored as String value
+     * @param key          stringToSave.
+     */
+    public void saveSharedPrefs(String stringToSave, String key) {
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(key, stringToSave);
+        editor.apply();
     }
-    public String getCountry() {
-        return country;
-    }
-    public String getCountryCode() {
-        return countryCode;
-    }
-    public String getProvince() {
-        return province;
-    }
-    public double getCases() {
-        return cases;
-    }
-    public String getStatus() {
-        return status;
+
+    public class TestToolbar extends AppCompatActivity {
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_covid);
+
+
+            Toolbar tBar =  findViewById(R.id.toolbar);
+            setSupportActionBar(tBar);
+//            DrawerLayout drawer = findViewById(R.id.drawer_layout);
+//            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, tBar, R.string.open, R.string.close);
+//            drawer.addDrawerListener(toggle);
+//            toggle.syncState();
+
+            //AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        }
+
+        /**
+         * reference  professor's lecture
+         * Inflate the menu items for use in the action bar     *
+         * Manages the search function in the action bar.
+         *
+         * @param menu The menu used in the action bar.
+         */
+        @Override
+        public boolean onCreateOptionsMenu(Menu menu) {
+
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.example_menu, menu);
+
+            MenuItem searchItem = menu.findItem(R.id.search_item);
+            SearchView sView = (SearchView) searchItem.getActionView();
+            sView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    return false;
+                }
+            });
+
+            return true;
+        }
+
+        /**
+         * this is the shared code as team
+         * Navigates to the selected activity.
+         * Based on the menu item click.
+         *
+         * @param item The menu used in the action bar.
+         */
+
+        public boolean onOptionItemSelected(MenuItem item) {
+            String message = null;
+            Intent pageChange;
+            switch (item.getItemId()) {
+                case R.id.home:
+                    pageChange = new Intent(this, MainActivity.class);
+                    startActivity(pageChange);
+                    break;
+
+                case R.id.ticket:
+                    message = " You clicked to go to the TicketMaster";
+                    pageChange = new Intent(this, TicketMaster.class);
+                    startActivity(pageChange);
+                    break;
+
+                case R.id.food:
+                    message = " You clicked to find the Recipy";
+                    pageChange = new Intent(this, RecipeSearchPage.class);
+                    startActivity(pageChange);
+                    break;
+
+                case R.id.audio:
+                    message = " You clicked to find to music";
+                    pageChange = new Intent(this, AudioActivity.class);
+                    startActivity(pageChange);
+                    break;
+
+                case R.id.search_item:
+                    message = " You clicked to find information";
+                    break;
+            }
+            DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+            drawerLayout.closeDrawer(GravityCompat.START);
+
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            return true;
+        }
+    }/*
+     * this is the class of the basic information of the related Covid Event
+     * @author: Jihyun Park
+     * */
+
+    class CovidEvent {
+        String country;
+        String countryCode;
+        String province;
+        double cases;
+        String status;
+
+        /* This is the class of the covid event
+         * @param String type is country, countryCode, province, status and double typs is cases
+         * @Author Jihyun Park*/
+        public CovidEvent(String country, String countryCode, String province, double cases, String status) {
+            this.country = country;
+            this.countryCode = countryCode;
+            this.province = province;
+            this.cases = cases;
+            this.status = status;
+        }
+
+        public String getCountry() {
+            return country;
+        }
+
+        public String getCountryCode() {
+            return countryCode;
+        }
+
+        public String getProvince() {
+            return province;
+        }
+
+        public double getCases() {
+            return cases;
+        }
+
+        public String getStatus() {
+            return status;
+        }
     }
 }
