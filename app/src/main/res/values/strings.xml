@@ -36,8 +36,8 @@
     <string name="urlChoice">Would you Like to open the event page in your browser?</string>
     <string name="urlTitle">Event URL</string>
     <string name="back">BACK</string>
-    <string name="from">FROM: </string>
-    <string name="to">To: </string>
+    <string name="from">From:YYYY-MM-DD</string>
+    <string name="to">To:YYYY-MM-DD</string>
     <string name="warning">warning! </string>
     <string name="delete">Are you sure to delete this? </string>
     <string name="norecover">It will be delete permanently. </string>

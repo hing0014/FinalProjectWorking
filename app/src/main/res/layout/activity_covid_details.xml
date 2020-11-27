@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,41 +8,10 @@
     tools:context=".CovidDetails">
 
     <TextView
-        android:id="@+id/country"
+        android:id="@+id/covidMessage"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:text="country" />
 
-    <TextView
-        android:id="@+id/conCode"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:text="Country Code"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="30dp" />
 
-    <TextView
-        android:id="@+id/province"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:text="province"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="60dp" />
-
-    <TextView
-        android:id="@+id/cases"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:text="cases"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="90dp" />
-
-    <TextView
-        android:id="@+id/status"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:text="status"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="120dp" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

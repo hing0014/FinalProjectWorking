@@ -25,8 +25,8 @@
     <string name="url">ACHETER UN BILLET</string>
     <string name="back">RETOUR</string>
     <string name="urlTitle">More about this source textSource text required for additional translation information</string>
-    <string name="from">De : </string>
-    <string name="to">À: </string>
+    <string name="from">De:YYYY-MM-DD</string>
+    <string name="to">À:YYYY-MM-DD</string>
     <string name="delete"> Êtes-vous sûr de vouloir le supprimer?</string>
     <string name="warning">Attention! </string>
     <string name="norecover">il sera supprimé définitivement. </string>
