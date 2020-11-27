@@ -72,7 +72,8 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
     /**
      * Fields for storing the database information for use throughout the class.
      */
-    private SharedPreferences prefs = null;
+    private static SQLiteDatabase dataBase;
+    private static SharedPreferences prefs;
     FragmentTicketDetails dFragment = null;
     private ArrayList<TicketEvent> events = new ArrayList<>();
     private TicketMasterListAdapter myAdapter;
@@ -91,9 +92,9 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
     String imageString;
     int eventArrayLength;
     Bitmap image;
-    SQLiteDatabase dataBase;
     static boolean dataNotFound = false;
     public static boolean isTablet = false;
+    long newId = 0;
 
     public final static String ITEM_CITY = "CITY";
     public final static String ITEM_NAME = "EVENT NAME";
@@ -103,7 +104,6 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
     public final static String ITEM_URL = "URL";
     public final static String ITEM_IMAGE_STRING = "IMAGE";
     public final static String ITEM_ID = "_id";
-
 
     /**
      * Creates and manages the click listeners of the button.
@@ -163,6 +163,14 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
                     .create().show();
         });
 
+        Button favbutton = findViewById(R.id.favorites);
+        favbutton.setOnClickListener(click ->
+        {
+            events.clear();
+            loadDataFromDatabase();
+            myAdapter.notifyDataSetChanged();
+        });
+
         Button searchButton = findViewById(R.id.searchButton);
         AtomicReference<TicketMasterQuery> tickQuer = new AtomicReference<>(new TicketMasterQuery());
         searchButton.setOnClickListener(click ->
@@ -182,7 +190,6 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
                     theBar.setProgress(0);
                     theBar.setVisibility(View.VISIBLE);
                     events.clear();
-                    dataBase.delete(TicketMasterOpener.TABLE_NAME, null, null);
                     tickQuer.get().execute("https://app.ticketmaster.com/discovery/v2/events.json?apikey=9xSSOAi25vaqiTP1UGfMa1fxycNnJPpd&city=" + city + "&radius=" + radius, city);
                     tickQuer.set(new TicketMasterQuery());
                 }
@@ -360,13 +367,13 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
                     imageString = encodeTobase64(image);
                     newRowValues.put(TicketMasterOpener.COL_IMAGE_STRING, imageString);
                     newRowValues.put(TicketMasterOpener.COL_URL, eventUrl);
-                    long newId = dataBase.insert(TicketMasterOpener.TABLE_NAME, null, newRowValues);
 
-                    events.add(new TicketEvent(city, eventName, startDate, ticketPriceMin, ticketPriceMax, eventUrl, image, newId));
+                    events.add(new TicketEvent(city, eventName, startDate, ticketPriceMin, ticketPriceMax, eventUrl, image, ++newId));
                     Log.i("Event Created", "Event name: " + eventName);
                     int inpars = ((i+1)*100)/eventArrayLength;
                     publishProgress(inpars);
                 }
+                newId = 0;
             }
             catch (Exception ignored)
             {
@@ -723,8 +730,7 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         switch(item.getItemId())
         {
             case R.id.home:
-                pageChange = new Intent(TicketMaster.this, MainActivity.class);
-                startActivity(pageChange);
+                finish();
                 break;
             case R.id.ticket:
                 pageChange = new Intent(TicketMaster.this, TicketMaster.class);
@@ -762,8 +768,7 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         switch(item.getItemId())
         {
             case R.id.home:
-                pageChange = new Intent(TicketMaster.this, MainActivity.class);
-                startActivity(pageChange);
+                finish();
                 break;
             case R.id.ticket:
                 pageChange = new Intent(TicketMaster.this, TicketMaster.class);
@@ -788,4 +793,17 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         drawerLayout.closeDrawer(GravityCompat.START);
         return false;
     }
+    /**
+     * Get the Database.
+     * <p>
+     * Get the Database.
+     */
+    public static SQLiteDatabase getDatabase(){return dataBase;}
+
+    /**
+     * Get the SharedPreferences.
+     * <p>
+     * Get the SharedPreferences.
+     */
+    public static SharedPreferences getSharedPreferences(){return prefs;}
 }
