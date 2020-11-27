@@ -44,4 +44,5 @@
     <string name="deletSure">Voulez-vous vraiment supprimer cet événement?</string>
     <string name="saveToFavorites">Enregistrer dans les favoris</string>
     <string name="showFavorites" >Favoris</string>
+    <string name="added">Événement ajouté aux favoris</string>
 </resources>

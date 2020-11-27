@@ -58,4 +58,5 @@
     <string name="deletSure">Are you sure you would like to delete this event?</string>
     <string name="saveToFavorites">Save To Favorites</string>
     <string name="showFavorites" >Favorites</string>
+    <string name="added">Event added to favorites</string>
 </resources>
