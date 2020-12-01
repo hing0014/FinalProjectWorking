@@ -53,4 +53,7 @@
     <string name="covid">Covid</string>
     <string name="recipe">Vous avez cliqué pour trouver la recette</string>
     <string name="yesOrNo">Cliquez sur OK pour continuer ou Annuler pour arrêter</string>
+    <string name="back1">retour</string>
+    <string name="store">Magasin</string>
+    <string name="delete1">Supprimer</string>
 </resources>

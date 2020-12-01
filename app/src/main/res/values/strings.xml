@@ -62,5 +62,8 @@
     <string name="audio"> You clicked to find to music</string>
     <string name="covid">You clicked to get the information about status of the Covid-19</string>
     <string name="recipe">You clicked to find the Recipe</string>
-    <string name="yesOrNo">"Click OK to continue, or Cancel to stop:"</string>
+    <string name="yesOrNo">Click OK to continue, or Cancel to stop:</string>
+    <string name="back1">Back</string>
+    <string name="store">Store</string>
+    <string name="delete1">Delete</string>
 </resources>

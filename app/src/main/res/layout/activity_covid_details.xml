@@ -1,17 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CovidDetails">
+    android:orientation="vertical"
+    tools:context=".FragmentCovidDetails">
 
-    <TextView
-        android:id="@+id/covidMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:text="country" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="70"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/country"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"/>
+
+        <TextView
+            android:id="@+id/conCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"/>
+
+
+        <TextView
+            android:id="@+id/province"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/cases"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/back1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="30"
+            android:text="@string/back" />
+
+        <Button
+            android:id="@+id/store"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="30"
+            android:text="@string/store" />
+
+        <Button
+            android:id="@+id/delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="30"
+            android:text="@string/delete1" />
+
+
+    </LinearLayout>
 
 
 </LinearLayout>

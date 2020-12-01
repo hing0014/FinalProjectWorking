@@ -9,6 +9,7 @@
 package com.example.finalProject;
 
 import android.annotation.SuppressLint;
+import android.app.FragmentManager;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -83,6 +84,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     public final static String ITEM_CASE = "CASES";
     public final static String ITEM_STATUS = "STATUS";
     private SharedPreferences prefs;
+    private FragmentManager fm;
 
     /**
      * When the button, Covid-19, of the main page, connected with this page.
@@ -99,6 +101,8 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         ListView myList = findViewById(R.id.listView);
         myAdapter = new MyListAdapter();
         myList.setAdapter(myAdapter);
+
+        boolean isTablet = findViewById(R.id.fragmentLocation) != null; //check if the FrameLayout is loaded
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -135,11 +139,22 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             dataToPass.putString(ITEM_COUNTRY, list.get(position).country);
             dataToPass.putString(ITEM_CONCODE, list.get(position).countryCode);
             dataToPass.putString(ITEM_PROVINCE, list.get(position).province);
-            dataToPass.putDouble(ITEM_CASE, list.get(position).cases);
+            dataToPass.putInt(ITEM_CASE, list.get(position).cases);
             dataToPass.putString(ITEM_STATUS, list.get(position).status);//
-            Intent nextActivity = new Intent(this, CovidDetails.class);
-            nextActivity.putExtras(dataToPass); //send data to next activity
-            startActivity(nextActivity);
+
+            // Is tablet
+            if (isTablet) {
+                FragmentCovidDetails newFragment = new FragmentCovidDetails();
+                fm = getFragmentManager();
+                newFragment.setArguments(dataToPass);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLocation, newFragment).commit(); // remove, delete...etc
+            }
+
+            else {  // isPhone
+                    Intent goToActivity = new Intent(this, EmptyCovid.class);
+                    goToActivity.putExtras(dataToPass); //send data to next activi
+                    startActivity(goToActivity);
+                }
         });
     }
 
@@ -300,11 +315,12 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
                 publishProgress(20);
                 publishProgress(50);
                 publishProgress(80);
-                myAdapter.notifyDataSetChanged();
+
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             return "Search Complete";
         }
 
@@ -338,9 +354,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
      * */
     private void loadDataFromDatabase() {
         covidOpener = new CovidOpener(this);
-
         CovidDB = covidOpener.getWritableDatabase();
-
 //        CovidDB.execSQL("CREATE TABLE " + covidOpener.TABLE_NAME + " (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
 //                + covidOpener.COL_TITLE + "  text," + covidOpener.COL_COUNTRY + " text," + covidOpener.COL_CONCODE + " TEXT," + covidOpener.COL_PROVINCE + " text,"
 //                + covidOpener.COL_CASE + " double," + covidOpener.COL_STATUS + " text);");
