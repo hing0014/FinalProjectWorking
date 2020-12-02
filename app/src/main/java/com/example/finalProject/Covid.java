@@ -71,13 +71,12 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     ProgressBar progressBar;
     String country, countryCode, province, status;
     int cases;
-    SQLiteDatabase CovidDB;
+    SQLiteDatabase covidDB;
     CovidOpener covidOpener;
     String pattern = "yyyy-MM-dd";
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
     String from = simpleDateFormat.format(new Date());
     String to = simpleDateFormat.format(new Date());
-
     String fromKey = simpleDateFormat.format(new Date());
     String toKey = simpleDateFormat.format(new Date());
     public final static String ITEM_COUNTRY = "COUNTRY";
@@ -85,7 +84,11 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     public final static String ITEM_PROVINCE = "PROVINCE";
     public final static String ITEM_CASE = "CASES";
     public final static String ITEM_STATUS = "STATUS";
-    private SharedPreferences sharedPref;
+    public final static String ITEM_ID = "ID";
+    public final static String SAVE_COUNTRY = "country";
+    public final static String SAVE_FROM = "from";
+    public final static String SAVE_TO = "to";
+    private static SharedPreferences sharedPref;
     private FragmentManager fm;
 
     /**
@@ -93,14 +96,20 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
      * When the search button is clicked the search button, stored data is showed the covid table which in contained all information that user wants.
      * Also recorded text will be stored on SharedPreferences as 'CovidFile' include  Country and date
      *
-     * @param savedInstanceState Bundle object used in the super call of onCreate.
      * @author Jihyun Park
      */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadDataFromDatabase();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_covid);
-
+        covidOpener = new CovidOpener(this);
+        covidDB = covidOpener.getWritableDatabase();
         loadDataFromDatabase();
 
         ListView myList = findViewById(R.id.listView);
@@ -117,8 +126,6 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        loadDataFromDatabase();
-
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
@@ -127,6 +134,14 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         fromText = findViewById(R.id.fromText);
         toText = findViewById(R.id.toText);
         searchText = findViewById(R.id.searchText);
+
+        sharedPref = getSharedPreferences("CovidFile", Context.MODE_PRIVATE);
+
+        searchText.setText(sharedPref.getString(SAVE_COUNTRY, ""));
+        fromText.setText(sharedPref.getString(SAVE_FROM, ""));
+        toText.setText(sharedPref.getString(SAVE_TO, ""));
+
+
         searchButton = findViewById(R.id.magnify);
         searchButton.setOnClickListener((clk) ->
         {
@@ -136,14 +151,9 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
 
             if (!(from.equals(to))) {
                 req.execute("https://api.covid19api.com/country/" + searchWord + "/status/confirmed/live?from=" + from + "T00:00:00Z&to=" + to + "T00:00:00Z");
-            }
-            else {
+            } else {
                 Toast.makeText(this, R.string.searchText1, Toast.LENGTH_SHORT).show();
             }
-            saveToSharedPreference(searchWord,searchText.getText().toString());
-            saveToSharedPreference(from,fromText.getText().toString());
-            saveToSharedPreference(to,toText.getText().toString());
-
         });
 
         myList.setOnItemClickListener((lv, item, position, id) -> {
@@ -152,7 +162,9 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             dataToPass.putString(ITEM_CODE, list.get(position).countryCode);
             dataToPass.putString(ITEM_PROVINCE, list.get(position).province);
             dataToPass.putInt(ITEM_CASE, list.get(position).cases);
-            dataToPass.putString(ITEM_STATUS, list.get(position).status);//
+            dataToPass.putString(ITEM_STATUS, list.get(position).status);
+            dataToPass.putLong(ITEM_ID, id);//
+
             // Is tablet
             if (isTablet) {
                 FragmentCovidDetails newFragment = new FragmentCovidDetails();
@@ -265,7 +277,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     }
 
 //    protected void deleteContext(Context c) {
-//        CovidDB.delete(CovidOpener.TABLE_NAME, CovidOpener.COL_CASE + "= ?", new String[]{Double.toString(c.getId())});
+//        covidDB.delete(CovidOpener.TABLE_NAME, CovidOpener.COL_ID + "= ?", new String[]{Long.toString( c.id )});
 //    }
 
     /* this class has 3 important functions: doInBackground, onProgressUpdate, onPostExecute
@@ -356,6 +368,22 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EditText fromText = findViewById(R.id.fromText);
+        String edFrom = fromText.getText().toString();
+        saveToSharedPreference(edFrom, SAVE_FROM);
+
+        EditText toText = findViewById(R.id.toText);
+        String edTo = toText.getText().toString();
+        saveToSharedPreference(edTo, SAVE_TO);
+
+        EditText searchText = findViewById(R.id.searchText);
+        String edSearchText = searchText.getText().toString();
+        saveToSharedPreference(edSearchText, SAVE_COUNTRY);
+    }
+
     /*
      * This is retrieve any privious data
      * create table, put data into table
@@ -363,13 +391,9 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
      * */
     private void loadDataFromDatabase() {
 
-        covidOpener = new CovidOpener(this);
-
-        CovidDB = covidOpener.getWritableDatabase();
-
         String[] columns = {covidOpener.COL_COUNTRY, covidOpener.COL_CODE, covidOpener.COL_PROVINCE, covidOpener.COL_CASES, covidOpener.COL_STATUS};
 
-        Cursor results = CovidDB.query(false, covidOpener.TABLE_NAME, columns, null, null, null, null, null, null);
+        Cursor results = covidDB.query(false, covidOpener.TABLE_NAME, columns, null, null, null, null, null, null);
 
         int countryColumnIndex = results.getColumnIndex(covidOpener.COL_COUNTRY);
         int countryCodeColumnIndex = results.getColumnIndex(covidOpener.COL_CODE);
@@ -390,36 +414,21 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     }
 
 
-    /**Stores at SharedPreferences
+    /**
+     * Stores at SharedPreferences
+     *
      * @param stringToSave will be stored as String value
      * @param key          stringToSave.
      */
     public void saveToSharedPreference(String stringToSave, String key) {
-        sharedPref=getSharedPreferences("CovidFile", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(key, stringToSave);
+        editor.putString(stringToSave, key);
         editor.commit();
     }
-    public SharedPreferences getDatabase(){
+
+    public SharedPreferences getDatabase() {
         return getDatabase();
     }
-/*
-//*this is the toolbar activity which is located upper part of main Avtivity
-// * this is include navigationMenu item as well
-// */
-//    public class TestToolbar extends AppCompatActivity {
-//
-//        @Override
-//        protected void onCreate(Bundle savedInstanceState) {
-//            super.onCreate(savedInstanceState);
-//            setContentView(R.layout.activity_covid);
-
-//            Toolbar tBar =  findViewById(R.id.toolbar);
-//            setSupportActionBar(tBar);
-//            DrawerLayout drawer = findViewById(R.id.drawer_layout);
-//            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, tBar, R.string.open, R.string.close);
-//            drawer.addDrawerListener(toggle);
-//            toggle.syncState();
 
     /**
      * reference  professor's lecture

@@ -16,6 +16,9 @@ import androidx.fragment.app.Fragment;
 
 public class FragmentCovidDetails extends Fragment {
 
+    SQLiteDatabase covidDB;
+    CovidOpener covidOpener;
+    long id;
     Bundle dataToPass;
     AppCompatActivity parentActivity;
 
@@ -28,10 +31,16 @@ public class FragmentCovidDetails extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        dataToPass = getArguments(); // bundle back
+        covidOpener = new CovidOpener(getContext());
+        covidDB = covidOpener.getWritableDatabase();
 
+        dataToPass = getArguments(); // bundle back
+        id = dataToPass.getLong(Covid.ITEM_ID);
         // Inflate the layout for this fragment
         View result = inflater.inflate(R.layout.activity_covid_details, container, false);
+
+        TextView idView = (TextView) result.findViewById(R.id.idText);
+        idView.setText("ID : " + id);
 
         TextView country = (TextView) result.findViewById(R.id.country);
         country.setText("Country : " + (dataToPass.getString(Covid.ITEM_COUNTRY)));
@@ -64,6 +73,7 @@ public class FragmentCovidDetails extends Fragment {
             CovidOpener dbHelper = new CovidOpener(getContext());
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             ContentValues newRowValues = new ContentValues();
+            newRowValues.put(CovidOpener.COL_ID, dataToPass.getString(Covid.ITEM_ID));
             newRowValues.put(CovidOpener.COL_COUNTRY, dataToPass.getString(Covid.ITEM_COUNTRY));
             newRowValues.put(CovidOpener.COL_CODE, dataToPass.getString(Covid.ITEM_CODE));
             newRowValues.put(CovidOpener.COL_PROVINCE, dataToPass.getString(Covid.ITEM_PROVINCE));
@@ -79,18 +89,23 @@ public class FragmentCovidDetails extends Fragment {
         });
 
         Button deleteButton = result.findViewById(R.id.delete);
-        deleteButton.setOnItemClickListener(click -> {
+        deleteButton.setOnClickListener(click -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
             alertDialogBuilder.setTitle(getResources().getString(R.string.delete)).setMessage(R.string.deletSure)
                     .setPositiveButton(getResources().getString(R.string.yes), (clicked, arg) ->
                     {
-
+                       // deleteFromDatabase(CovidOpener.TABLE_NAME, id,  );
                     })
                     .setNegativeButton(getResources().getString(R.string.no), (clicked, arg) -> {  })
                     .create().show();
 
-        });
+            });
         return result;
+    }
+    private void deleteFromDatabase(long id){
+
+       // covidDB.delete(id);
+
     }
 }
 
