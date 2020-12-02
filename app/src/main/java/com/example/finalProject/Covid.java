@@ -11,6 +11,7 @@ package com.example.finalProject;
 import android.annotation.SuppressLint;
 import android.app.FragmentManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -62,6 +63,7 @@ import java.util.Date;
  **/
 public class Covid extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static boolean isTablet;
     ArrayList<CovidEvent> list = new ArrayList<>();
     MyListAdapter myAdapter;
     ImageButton searchButton;
@@ -75,20 +77,21 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
     String from = simpleDateFormat.format(new Date());
     String to = simpleDateFormat.format(new Date());
-    String stKey = "";
+
     String fromKey = simpleDateFormat.format(new Date());
     String toKey = simpleDateFormat.format(new Date());
     public final static String ITEM_COUNTRY = "COUNTRY";
-    public final static String ITEM_CONCODE = "COUNTRY CODE";
+    public final static String ITEM_CODE = "CODE";
     public final static String ITEM_PROVINCE = "PROVINCE";
     public final static String ITEM_CASE = "CASES";
     public final static String ITEM_STATUS = "STATUS";
-    private SharedPreferences prefs;
+    private SharedPreferences sharedPref;
     private FragmentManager fm;
 
     /**
      * When the button, Covid-19, of the main page, connected with this page.
      * When the search button is clicked the search button, stored data is showed the covid table which in contained all information that user wants.
+     * Also recorded text will be stored on SharedPreferences as 'CovidFile' include  Country and date
      *
      * @param savedInstanceState Bundle object used in the super call of onCreate.
      * @author Jihyun Park
@@ -97,6 +100,8 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_covid);
+
+        loadDataFromDatabase();
 
         ListView myList = findViewById(R.id.listView);
         myAdapter = new MyListAdapter();
@@ -111,6 +116,8 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open, R.string.close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        loadDataFromDatabase();
 
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
@@ -129,32 +136,34 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
 
             if (!(from.equals(to))) {
                 req.execute("https://api.covid19api.com/country/" + searchWord + "/status/confirmed/live?from=" + from + "T00:00:00Z&to=" + to + "T00:00:00Z");
-            } else {
+            }
+            else {
                 Toast.makeText(this, R.string.searchText1, Toast.LENGTH_SHORT).show();
             }
+            saveToSharedPreference(searchWord,searchText.getText().toString());
+            saveToSharedPreference(from,fromText.getText().toString());
+            saveToSharedPreference(to,toText.getText().toString());
+
         });
 
         myList.setOnItemClickListener((lv, item, position, id) -> {
             Bundle dataToPass = new Bundle();
             dataToPass.putString(ITEM_COUNTRY, list.get(position).country);
-            dataToPass.putString(ITEM_CONCODE, list.get(position).countryCode);
+            dataToPass.putString(ITEM_CODE, list.get(position).countryCode);
             dataToPass.putString(ITEM_PROVINCE, list.get(position).province);
             dataToPass.putInt(ITEM_CASE, list.get(position).cases);
             dataToPass.putString(ITEM_STATUS, list.get(position).status);//
-
             // Is tablet
             if (isTablet) {
                 FragmentCovidDetails newFragment = new FragmentCovidDetails();
                 fm = getFragmentManager();
                 newFragment.setArguments(dataToPass);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLocation, newFragment).commit(); // remove, delete...etc
+            } else {  // isPhone
+                Intent goToActivity = new Intent(this, EmptyCovid.class);
+                goToActivity.putExtras(dataToPass); //send data to next activi
+                startActivity(goToActivity);
             }
-
-            else {  // isPhone
-                    Intent goToActivity = new Intent(this, EmptyCovid.class);
-                    goToActivity.putExtras(dataToPass); //send data to next activi
-                    startActivity(goToActivity);
-                }
         });
     }
 
@@ -305,9 +314,9 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
                     ContentValues newRowValues = new ContentValues();
 
                     newRowValues.put(covidOpener.COL_COUNTRY, country);
-                    newRowValues.put(covidOpener.COL_CONCODE, countryCode);
+                    newRowValues.put(covidOpener.COL_CODE, countryCode);
                     newRowValues.put(covidOpener.COL_PROVINCE, province);
-                    newRowValues.put(covidOpener.COL_CASE, cases);
+                    newRowValues.put(covidOpener.COL_CASES, cases);
                     newRowValues.put(covidOpener.COL_STATUS, status);
 
                     list.add(new CovidEvent(country, countryCode, province, cases, status));
@@ -327,7 +336,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         /*
          * this is the response from a server
          * it shows computation progresses, update GUI
-         * @author Jihyin Park
+         * @author Jihyun Park
          */
         @Override //Type 2
         public void onProgressUpdate(Integer... value) {
@@ -353,20 +362,19 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
      * @author Jihyun Park
      * */
     private void loadDataFromDatabase() {
+
         covidOpener = new CovidOpener(this);
+
         CovidDB = covidOpener.getWritableDatabase();
-//        CovidDB.execSQL("CREATE TABLE " + covidOpener.TABLE_NAME + " (_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-//                + covidOpener.COL_TITLE + "  text," + covidOpener.COL_COUNTRY + " text," + covidOpener.COL_CONCODE + " TEXT," + covidOpener.COL_PROVINCE + " text,"
-//                + covidOpener.COL_CASE + " double," + covidOpener.COL_STATUS + " text);");
-//
-        String[] columns = {covidOpener.COL_TITLE, covidOpener.COL_COUNTRY, covidOpener.COL_CONCODE, covidOpener.COL_PROVINCE, covidOpener.COL_CASE, covidOpener.COL_STATUS};
+
+        String[] columns = {covidOpener.COL_COUNTRY, covidOpener.COL_CODE, covidOpener.COL_PROVINCE, covidOpener.COL_CASES, covidOpener.COL_STATUS};
 
         Cursor results = CovidDB.query(false, covidOpener.TABLE_NAME, columns, null, null, null, null, null, null);
 
         int countryColumnIndex = results.getColumnIndex(covidOpener.COL_COUNTRY);
-        int countryCodeColumnIndex = results.getColumnIndex(covidOpener.COL_CONCODE);
+        int countryCodeColumnIndex = results.getColumnIndex(covidOpener.COL_CODE);
         int provinceColumnIndex = results.getColumnIndex(covidOpener.COL_PROVINCE);
-        int caseColumnIndex = results.getColumnIndex(covidOpener.COL_CASE);
+        int caseColumnIndex = results.getColumnIndex(covidOpener.COL_CASES);
         int statusColumnIndex = results.getColumnIndex(covidOpener.COL_STATUS);
 
         while (results.moveToNext()) {
@@ -378,38 +386,24 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
 
             list.add(new CovidEvent(country, countryCode, province, cases, status));
         }
+        results.close();
     }
 
-    /*
-     * when searched text, it will store at SharedPreference automatically
-     * Searched Text could be country name, country code, province name.
-     * */
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        EditText edsearchText = findViewById(R.id.searchText);
-//        String st = edsearchText.getText().toString();
-//        saveSharedPrefs(st, stKey);
-//
-//        EditText edfr = findViewById(R.id.fromText);
-//        String storedFrom = edfr.getText().toString();
-//        saveSharedPrefs(storedFrom, fromKey);
-//
-//        EditText edTo = findViewById(R.id.toText);
-//        String storedTo = edTo.getText().toString();
-//        saveSharedPrefs(storedTo, toKey);
-//}
-//
-//    /**
-//     * @param stringToSave will be stored as String value
-//     * @param key          stringToSave.
-//     */
-//    public void saveSharedPrefs(String stringToSave, String key) {
-//        SharedPreferences.Editor editor = prefs.edit();
-//        editor.putString(key, stringToSave);
-//        editor.apply();
-//    }
-///*
+
+    /**Stores at SharedPreferences
+     * @param stringToSave will be stored as String value
+     * @param key          stringToSave.
+     */
+    public void saveToSharedPreference(String stringToSave, String key) {
+        sharedPref=getSharedPreferences("CovidFile", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(key, stringToSave);
+        editor.commit();
+    }
+    public SharedPreferences getDatabase(){
+        return getDatabase();
+    }
+/*
 //*this is the toolbar activity which is located upper part of main Avtivity
 // * this is include navigationMenu item as well
 // */
@@ -504,6 +498,19 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         return true;
     }
+
+//    /*
+//     */
+//    public static SQLiteDatabase getDatabase() {
+//        return sqLiteDatabase;
+//    }
+//
+//    /**
+//     * Get the SharedPreferences.
+//     */
+//    public static SharedPreferences getSharedPreferences() {
+//        return sharedPref;
+//    }
 }
 /*
  * this is the class of the basic information of the related Covid Event

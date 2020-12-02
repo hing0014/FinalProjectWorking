@@ -21,12 +21,12 @@ public class CovidOpener extends SQLiteOpenHelper {
     protected final static String DATABASE_NAME = "CovidDB";
     protected final static int VERSION_NUM = 1;
     public final static String TABLE_NAME = "Covid";
-    public final static String COL_TITLE = "Covid Case";
+    public final static String COL_TITLE = "Covid19Case";
     public final static String COL_ID = "_id";
     public final static String COL_COUNTRY = "Country";
-    public final static String COL_CONCODE = "Country Code";
+    public final static String COL_CODE = "Code";
     public final static String COL_PROVINCE = "Province";
-    public final static String COL_CASE = "Cases";
+    public final static String COL_CASES = "Cases";
     public final static String COL_STATUS = "Status";
 
     /*@param Context ctx
@@ -43,9 +43,13 @@ public class CovidOpener extends SQLiteOpenHelper {
      * */
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + TABLE_NAME
-                + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, " + COL_TITLE + "TEXT,"
-                + COL_COUNTRY + " TEXT," + COL_CONCODE + "TEXT," + COL_PROVINCE + " TEXT,"
-                + COL_CASE +  " double," + COL_STATUS + " TEXT);");
+                + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COL_TITLE + " TEXT,"
+                + COL_COUNTRY + " TEXT,"
+                + COL_CODE + " TEXT,"
+                + COL_PROVINCE + " TEXT,"
+                + COL_CASES +  " int,"
+                + COL_STATUS + " TEXT);");
     }
 
     /*this is for using upgrading of the table
@@ -69,4 +73,5 @@ public class CovidOpener extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
+
 }

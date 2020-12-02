@@ -73,8 +73,5 @@
             android:layout_weight="30"
             android:text="@string/delete1" />
 
-
     </LinearLayout>
-
-
 </LinearLayout>

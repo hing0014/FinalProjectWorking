@@ -55,8 +55,8 @@
     <string name="ok">OK</string>
     <string name="ticketMasterHelpTitle">SEARCH FOR TICKETMASTER EVENTS</string>
     <string name="do_delete">Event Deletion</string>
-    <string name="deletSure">Are you sure you would like to delete this event?</string>
-    <string name="attention">attention</string>
+    <string name="deletSure">Are you sure you would like to delete this information?</string>
+    <string name="attention">Attention</string>
     <string name="home">You clicked to go Home</string>
     <string name="ticket">You clicked to go to the TicketMaster</string>
     <string name="audio"> You clicked to find to music</string>
@@ -66,4 +66,6 @@
     <string name="back1">Back</string>
     <string name="store">Store</string>
     <string name="delete1">Delete</string>
+    <string name="stored">This information is saved !! </string>
+
 </resources>
