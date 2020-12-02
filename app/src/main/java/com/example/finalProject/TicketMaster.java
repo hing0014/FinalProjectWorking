@@ -137,13 +137,13 @@ public class TicketMaster extends AppCompatActivity implements NavigationView.On
         ListView myList = findViewById(R.id.theListView);
         loadDataFromDatabase();
 
-        EditText cityText = findViewById(R.id.citySearch);
         prefs = getSharedPreferences("file", Context.MODE_PRIVATE);
+
+        EditText cityText = findViewById(R.id.citySearch);
         String prefCity = prefs.getString(cityKey, "");
         cityText.setText(prefCity);
 
         EditText radiusText =  findViewById(R.id.radius);
-        prefs = getSharedPreferences("file", Context.MODE_PRIVATE);
         String radText = prefs.getString(radiusKey, "");
         radiusText.setText(radText);
 
