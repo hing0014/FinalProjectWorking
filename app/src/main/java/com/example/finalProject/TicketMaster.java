@@ -215,7 +215,7 @@ public class TicketMaster extends AppCompatActivity
         myList.setOnItemLongClickListener( (parent, view, pos, id) -> {
 
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setTitle(getResources().getString(R.string.do_delete)).setMessage(R.string.deletSure)
+            alertDialogBuilder.setTitle(getResources().getString(R.string.attention)).setMessage(R.string.deletSure)
                     .setPositiveButton("Yes", (click, arg) ->
                     {
                         TicketEvent selectedEvent = events.get(pos);

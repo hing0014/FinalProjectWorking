@@ -26,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -34,8 +35,8 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -68,6 +69,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     MyListAdapter myAdapter;
     ImageButton searchButton;
     EditText searchText, fromText, toText;
+    Button helpButton;
     ProgressBar progressBar;
     String country, countryCode, province, status;
     int cases;
@@ -99,17 +101,13 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
      * @author Jihyun Park
      */
     @Override
-    protected void onResume() {
-        super.onResume();
-        loadDataFromDatabase();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_covid);
+
         covidOpener = new CovidOpener(this);
         covidDB = covidOpener.getWritableDatabase();
+
         loadDataFromDatabase();
 
         ListView myList = findViewById(R.id.listView);
@@ -118,13 +116,16 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
 
         boolean isTablet = findViewById(R.id.fragmentLocation) != null; //check if the FrameLayout is loaded
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.open, R.string.close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
@@ -141,7 +142,6 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         fromText.setText(sharedPref.getString(SAVE_FROM, ""));
         toText.setText(sharedPref.getString(SAVE_TO, ""));
 
-
         searchButton = findViewById(R.id.magnify);
         searchButton.setOnClickListener((clk) ->
         {
@@ -156,6 +156,21 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             }
         });
 
+        myList.setOnItemLongClickListener((p, b, pos, id) -> {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle(getResources().getString(R.string.attention)).setMessage(R.string.deletSure)
+                    .setPositiveButton(R.string.yes, (click, arg) ->
+                    {
+                        list.remove(pos);
+                        covidDB.delete(CovidOpener.TABLE_NAME, CovidOpener.COL_ID + "= ?", new String[]{Long.toString(id)});
+                        myAdapter.notifyDataSetChanged();
+                    })
+                    .setNegativeButton("No", (click, arg) -> {
+                    })
+                    .create().show();
+            return true;
+        });
+
         myList.setOnItemClickListener((lv, item, position, id) -> {
             Bundle dataToPass = new Bundle();
             dataToPass.putString(ITEM_COUNTRY, list.get(position).country);
@@ -164,7 +179,6 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             dataToPass.putInt(ITEM_CASE, list.get(position).cases);
             dataToPass.putString(ITEM_STATUS, list.get(position).status);
             dataToPass.putLong(ITEM_ID, id);//
-
             // Is tablet
             if (isTablet) {
                 FragmentCovidDetails newFragment = new FragmentCovidDetails();
@@ -177,44 +191,50 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
                 startActivity(goToActivity);
             }
         });
+
+        helpButton = findViewById(R.id.help);
+        helpButton.setOnClickListener((click) -> {
+            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+            alertBuilder.setTitle(R.string.helpTitle).setMessage(R.string.covidHelp)
+                    .setPositiveButton(R.string.confirm, (cl, arg) -> { }).create().show();
+        });
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onNavigationItemSelected(MenuItem item) {
+        Intent pageChange;
 
         switch (item.getItemId()) {
             case (R.id.home):
-                Intent pageChange = new Intent(Covid.this, MainActivity.class);
+                pageChange = new Intent(Covid.this, MainActivity.class);
                 startActivity(pageChange);
                 break;
 
             case (R.id.ticket):
-                // message=" You clicked to go to the TicketMaster";
-                Intent pageChange2 = new Intent(Covid.this, TicketMaster.class);
-                startActivity(pageChange2);
+                pageChange = new Intent(Covid.this, TicketMaster.class);
+                startActivity(pageChange);
                 break;
 
             case (R.id.food):
-                //message=" You clicked to find the Recipe";
-                Intent pageChange3 = new Intent(Covid.this, RecipeSearchPage.class);
-                startActivity(pageChange3);
+                pageChange = new Intent(Covid.this, RecipeSearchPage.class);
+                startActivity(pageChange);
                 break;
 
             case (R.id.audio):
-                //message=" You clicked to find to music";
-                Intent pageChange4 = new Intent(Covid.this, AudioActivity.class);
-                startActivity(pageChange4);
+                pageChange = new Intent(Covid.this, AudioActivity.class);
+                startActivity(pageChange);
                 break;
 
             case (R.id.bacteria):
-                //message=" You clicked to get the information about status of the Covid-19";
-
+                finish();
                 break;
 
             case (R.id.search_item):
-                //message=" You clicked to find information";
                 break;
         }
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout.closeDrawer(GravityCompat.START);
         return false;
     }
 
@@ -275,9 +295,9 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             return newView;
         }
     }
-
-//    protected void deleteContext(Context c) {
-//        covidDB.delete(CovidOpener.TABLE_NAME, CovidOpener.COL_ID + "= ?", new String[]{Long.toString( c.id )});
+//
+//    protected void deleteFromDatabase(long id) {
+//        covidDB.delete(CovidOpener.TABLE_NAME, CovidOpener.COL_ID + "= ?", new String[]{Long.toString(id)});
 //    }
 
     /* this class has 3 important functions: doInBackground, onProgressUpdate, onPostExecute
@@ -413,7 +433,6 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         results.close();
     }
 
-
     /**
      * Stores at SharedPreferences
      *
@@ -424,10 +443,6 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(stringToSave, key);
         editor.commit();
-    }
-
-    public SharedPreferences getDatabase() {
-        return getDatabase();
     }
 
     /**
@@ -467,100 +482,77 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
      * @param item The menu used in the action bar.
      */
     @SuppressLint("NonConstantResourceId")
-    public boolean onOptionItemSelected(MenuItem item) {
-        String message = null;
+   // @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent pageChange;
         switch (item.getItemId()) {
             case R.id.home:
-                message = " You click to go Main page.";
-                Intent pageChange = new Intent(Covid.this, MainActivity.class);
+                pageChange = new Intent(Covid.this, MainActivity.class);
                 startActivity(pageChange);
                 break;
 
             case R.id.ticket:
-                message = " You clicked to go to the TicketMaster";
                 pageChange = new Intent(Covid.this, TicketMaster.class);
                 startActivity(pageChange);
                 break;
 
             case R.id.food:
-                message = " You clicked to find the Recipy";
                 pageChange = new Intent(Covid.this, RecipeSearchPage.class);
                 startActivity(pageChange);
                 break;
 
             case R.id.audio:
-                message = " You clicked to find to music";
                 pageChange = new Intent(Covid.this, AudioActivity.class);
                 startActivity(pageChange);
                 break;
 
             case R.id.search_item:
-                message = " You clicked to find information";
                 break;
 
-            default:
-                throw new IllegalStateException("Unexpected value: " + item.getItemId());
+           }
+               return false;
+    }
+
+    /*
+     * this is the class of the basic information of the related Covid Event
+     * @author: Jihyun Park
+     * */
+    class CovidEvent {
+        String country;
+        String countryCode;
+        String province;
+        int cases;
+        String status;
+
+        /* This is the class of the covid event
+         * @param String type is country, countryCode, province, status and double typs is cases
+         * @Author Jihyun Park*/
+        public CovidEvent(String country, String countryCode, String province, int cases, String status) {
+            this.country = country;
+            this.countryCode = countryCode;
+            this.province = province;
+            this.cases = cases;
+            this.status = status;
         }
-        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
-        drawerLayout.closeDrawer(GravityCompat.START);
 
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-        return true;
-    }
+        public String getCountry() {
+            return country;
+        }
 
-//    /*
-//     */
-//    public static SQLiteDatabase getDatabase() {
-//        return sqLiteDatabase;
-//    }
-//
-//    /**
-//     * Get the SharedPreferences.
-//     */
-//    public static SharedPreferences getSharedPreferences() {
-//        return sharedPref;
-//    }
-}
-/*
- * this is the class of the basic information of the related Covid Event
- * @author: Jihyun Park
- * */
+        public String getCountryCode() {
+            return countryCode;
+        }
 
-class CovidEvent {
-    String country;
-    String countryCode;
-    String province;
-    int cases;
-    String status;
+        public String getProvince() {
+            return province;
+        }
 
-    /* This is the class of the covid event
-     * @param String type is country, countryCode, province, status and double typs is cases
-     * @Author Jihyun Park*/
-    public CovidEvent(String country, String countryCode, String province, int cases, String status) {
-        this.country = country;
-        this.countryCode = countryCode;
-        this.province = province;
-        this.cases = cases;
-        this.status = status;
-    }
+        public int getCases() {
+            return cases;
+        }
 
-    public String getCountry() {
-        return country;
-    }
-
-    public String getCountryCode() {
-        return countryCode;
-    }
-
-    public String getProvince() {
-        return province;
-    }
-
-    public int getCases() {
-        return cases;
-    }
-
-    public String getStatus() {
-        return status;
+        public String getStatus() {
+            return status;
+        }
     }
 }

@@ -88,23 +88,12 @@ public class FragmentCovidDetails extends Fragment {
                     .create().show();
         });
 
-        Button deleteButton = result.findViewById(R.id.delete);
-        deleteButton.setOnClickListener(click -> {
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-            alertDialogBuilder.setTitle(getResources().getString(R.string.delete)).setMessage(R.string.deletSure)
-                    .setPositiveButton(getResources().getString(R.string.yes), (clicked, arg) ->
-                    {
-                       // deleteFromDatabase(CovidOpener.TABLE_NAME, id,  );
-                    })
-                    .setNegativeButton(getResources().getString(R.string.no), (clicked, arg) -> {  })
-                    .create().show();
 
-            });
         return result;
     }
     private void deleteFromDatabase(long id){
 
-       // covidDB.delete(id);
+        covidDB.delete(CovidOpener.TABLE_NAME, CovidOpener.COL_ID + "= ?", new String[]{Long.toString(id)});
 
     }
 }
