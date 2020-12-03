@@ -62,15 +62,23 @@
             android:id="@+id/back1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="50"
+            android:layout_weight="30"
             android:text="@string/back" />
 
         <Button
             android:id="@+id/store"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="50"
+            android:layout_weight="30"
             android:text="@string/store" />
+
+        <Button
+            android:id="@+id/delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="30"
+            android:text="@string/delete1" />
+
 
     </LinearLayout>
 </LinearLayout>

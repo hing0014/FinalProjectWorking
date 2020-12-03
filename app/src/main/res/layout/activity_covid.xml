@@ -27,7 +27,7 @@
 
             <EditText
                 android:id="@+id/searchText"
-                android:layout_width="300dp"
+                android:layout_width="216dp"
                 android:layout_height="wrap_content"
                 android:hint="@string/searchText"
                 android:inputType="textPersonName"
@@ -35,7 +35,7 @@
 
             <EditText
                 android:id="@+id/fromText"
-                android:layout_width="150dp"
+                android:layout_width="108dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/searchText"
                 android:hint="@string/from"
@@ -43,7 +43,7 @@
 
             <EditText
                 android:id="@+id/toText"
-                android:layout_width="150dp"
+                android:layout_width="108dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/searchText"
                 android:layout_toEndOf="@id/fromText"
@@ -52,19 +52,27 @@
 
             <ImageButton
                 android:id="@+id/magnify"
-                android:layout_width="90dp"
-                android:layout_height="40dp"
+                android:layout_width="80dp"
+                android:layout_height="50dp"
                 android:layout_toEndOf="@id/toText"
                 android:layout_toRightOf="@id/searchText"
                 app:srcCompat="@drawable/magnify" />
 
             <Button
                 android:id="@+id/help"
-                android:layout_width="90dp"
-                android:layout_height="40dp"
-                android:layout_toRightOf="@id/toText"
-                android:layout_below="@id/magnify"
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:layout_toRightOf="@id/magnify"
                 android:text="@string/help" />
+
+            <Button
+                android:id="@+id/repository"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/magnify"
+                android:layout_toEndOf="@id/toText"
+                android:text="@string/repository" />
+
 
             <ProgressBar
                 android:id="@+id/progressBar"

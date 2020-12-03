@@ -59,4 +59,6 @@
     <string name="helpTitle">Centre daide</string>
     <string name="covidHelp">Ce site présente les résultats des cas confirmés de Corona Virus. Veuillez entrer le pays et la date que vous voulez connaître. Par exemple, au Canada de 2020-10-20 à 2020-10-21, vous verrez les résultats des cas confirmés du Canada par la province.</string>
     <string name="confirm">O</string>
+    <string name="repository">Repository</string>
+
 </resources>

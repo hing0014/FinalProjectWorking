@@ -88,6 +88,15 @@ public class FragmentCovidDetails extends Fragment {
                     .create().show();
         });
 
+        Button deleteButton = result.findViewById(R.id.delete);
+        deleteButton.setOnClickListener(click ->
+        {   parentActivity.getSupportFragmentManager().beginTransaction().remove(this).commit();
+            deleteFromDatabase(id);
+//            Covid parent = (Covid) getActivity();
+//            Intent goBack = new Intent();
+//            parent.setResult(Activity.RESULT_OK, goBack);
+        }
+        );
 
         return result;
     }
