@@ -138,7 +138,6 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
      * Based on the menu item click.
      * @param item The menu used in the action bar.
      */
-
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected( MenuItem item) {
