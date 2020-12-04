@@ -55,7 +55,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * This is the database for the covid-19 cases
@@ -83,10 +82,10 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     CovidOpener covidOpener;
     String pattern = "yyyy-MM-dd";
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-    String from = simpleDateFormat.format(new Date());
-    String to = simpleDateFormat.format(new Date());
-    String fromKey = simpleDateFormat.format(new Date());
-    String toKey = simpleDateFormat.format(new Date());
+//    String from = simpleDateFormat.format(new Date());
+//    String to = simpleDateFormat.format(new Date());
+//    String fromKey = simpleDateFormat.format(new Date());
+//    String toKey = simpleDateFormat.format(new Date());
     public final static String ITEM_COUNTRY = "COUNTRY";
     public final static String ITEM_CODE = "CODE";
     public final static String ITEM_PROVINCE = "PROVINCE";
@@ -102,7 +101,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     /**
      * When the button, Covid-19, of the main page, connected with this page.
      * When the search button is clicked the search button, stored data is showed the covid table which in contained all information that user wants.
-     * Also recorded text will be stored on SharedPreferences as 'CovidFile' include  Country and date
+     * Also recorded text will be stored on SharedPreferences as 'CovidFile' include  Country and date those are searched and period
      *
      * @author Jihyun Park
      */
@@ -213,18 +212,18 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             }
         });
 
-//        helpButton = findViewById(R.id.help);
-//        helpButton.setOnClickListener((click) -> {
-//            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-//            alertBuilder.setTitle(R.string.helpTitle).setMessage(R.string.covidHelp)
-//                    .setPositiveButton(R.string.confirm, (cl, arg) -> {
-//                    }).create().show();
-//        });
+        helpButton = findViewById(R.id.help);
+        helpButton.setOnClickListener((click) -> {
+            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+            alertBuilder.setTitle(R.string.helpTitle).setMessage(R.string.covidHelp)
+                    .setPositiveButton(R.string.confirm, (cl, arg) -> {
+                    }).create().show();
+        });
 
         repositButton = findViewById(R.id.repository);
         repositButton.setOnClickListener( clickto -> {
             loadDataFromDatabase();
-//            repoAdapter.notifyDataSetChanged();
+            repoAdapter.notifyDataSetChanged();
                 });
     }
 

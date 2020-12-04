@@ -1,5 +1,6 @@
 package com.example.finalProject;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -7,21 +8,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.SearchView;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-public class MainActivity extends AppCompatActivity
-{
+import com.google.android.material.navigation.NavigationView;
+
+public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         Button covid = (Button) findViewById(R.id.covid);
         covid.setOnClickListener( (click) ->
@@ -58,7 +62,12 @@ public class MainActivity extends AppCompatActivity
             startActivity(audioActivity);
         });
     }
-
+    /**
+     * Inflate the menu items for use in the action bar
+     * <p>
+     * Manages the search function in the action bar.
+     * @param menu The menu used in the action bar.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
@@ -84,7 +93,13 @@ public class MainActivity extends AppCompatActivity
 
         return true;
     }
-
+    /**
+     * Navigates to the selected activity.
+     * <p>
+     * Based on the menu item click.
+     * @param item The menu used in the action bar.
+     */
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -92,8 +107,7 @@ public class MainActivity extends AppCompatActivity
         switch(item.getItemId())
         {
             case R.id.home:
-                pageChange = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(pageChange);
+                finish();
                 break;
             case R.id.ticket:
                 pageChange = new Intent(MainActivity.this, TicketMaster.class);
@@ -112,20 +126,28 @@ public class MainActivity extends AppCompatActivity
                 startActivity(pageChange);
                 break;
             case R.id.search_item:
+
+
                 break;
         }
         return false;
     }
-    // Needed for the OnNavigationItemSelected interface:
+    /**
+     * Navigates to the selected activity.
+     * <p>
+     * Based on the menu item click.
+     * @param item The menu used in the action bar.
+     */
 
+    @SuppressLint("NonConstantResourceId")
+    @Override
     public boolean onNavigationItemSelected( MenuItem item) {
 
         Intent pageChange;
         switch(item.getItemId())
         {
             case R.id.home:
-                pageChange = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(pageChange);
+                finish();
                 break;
             case R.id.ticket:
                 pageChange = new Intent(MainActivity.this, TicketMaster.class);
