@@ -6,7 +6,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -85,14 +84,6 @@
                 android:text="@string/SearchButtonText"
                 android:layout_alignParentEnd="true"
                 />
-            <ListView
-                android:id="@+id/theListView"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_above="@+id/loadBar"
-                android:layout_below="@+id/searchButton"
-                />
-
             <ProgressBar
                 android:id="@+id/loadBar"
                 android:layout_width="match_parent"
@@ -100,10 +91,14 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_alignParentBottom="true"
                 />
+            <ListView
+                android:id="@+id/theListView"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_above="@+id/loadBar"
+                android:layout_below="@+id/searchButton" />
+         </RelativeLayout>
 
-        </RelativeLayout>
-
-        <!-- THIS IS WHAT IS WHAT POPS OUT FROM THE SIDE:-->
         <com.google.android.material.navigation.NavigationView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

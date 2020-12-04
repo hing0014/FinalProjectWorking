@@ -17,13 +17,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
-
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
-{
-
+public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener{
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -130,6 +126,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(pageChange);
                 break;
             case R.id.search_item:
+
+
                 break;
         }
         return false;
@@ -140,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      * Based on the menu item click.
      * @param item The menu used in the action bar.
      */
-    // Needed for the OnNavigationItemSelected interface:
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected( MenuItem item) {
