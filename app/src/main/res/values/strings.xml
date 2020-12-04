@@ -50,8 +50,8 @@
     <string name="homeButton">Home</string>
     <string name="open">open</string>
     <string name="close">close</string>
-    <string name="help">Help</string>
-    <string name="ticketMasterHelp">Enter a the name of the city you wish to search.  Enter a radius in miles to extend the search outside the city.</string>
+    <string name="help">help</string>
+    <string name="ticketMasterHelp">Enter a the name of the city you wish to search.  Enter a radius in miles to extend the search outside the city. Select Favorites to show Favorites.</string>
     <string name="ok">OK</string>
     <string name="ticketMasterHelpTitle">SEARCH FOR TICKETMASTER EVENTS</string>
     <string name="deletSure">Are you sure you would like to delete this information?</string>
@@ -72,7 +72,8 @@
     <string name="repository">Load Repository</string>
     <string name="confirm1">CONFIRM</string>
     <string name="do_delete">Event Deletion</string>
-    <string name="deletSure">Are you sure you would like to delete this event?</string>
+    <string name="deletConfirm">Are you sure you would like to delete this event?</string>
     <string name="saveToFavorites">Save To Favorites</string>
     <string name="showFavorites" >Favorites</string>
+    <string name="added">Event added to favorites</string>
 </resources>

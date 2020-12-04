@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -111,6 +112,7 @@ public class FragmentTicketDetails extends Fragment
             newRowValues.put(TicketMasterOpener.COL_IMAGE_STRING, TicketMaster.encodeTobase64(image));
             newRowValues.put(TicketMasterOpener.COL_URL, eventUrl);
             dataBase.insert(TicketMasterOpener.TABLE_NAME, null, newRowValues);
+            Toast.makeText(parentActivity.getApplicationContext(),R.string.added, Toast.LENGTH_SHORT).show();
         });
 
 
