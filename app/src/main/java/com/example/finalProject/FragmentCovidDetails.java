@@ -10,9 +10,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.snackbar.Snackbar;
 
 public class FragmentCovidDetails extends Fragment {
 
@@ -62,9 +63,7 @@ public class FragmentCovidDetails extends Fragment {
         backButton.setOnClickListener(click ->
         {
             parentActivity.getSupportFragmentManager().beginTransaction().remove(this).commit();
-            if (!Covid.isTablet) {
-                parentActivity.onBackPressed();
-            }
+            // TODO refrech the list...
         });
 
         Button storeButton = result.findViewById(R.id.store);
@@ -78,27 +77,39 @@ public class FragmentCovidDetails extends Fragment {
             newRowValues.put(CovidOpener.COL_CODE, dataToPass.getString(Covid.ITEM_CODE));
             newRowValues.put(CovidOpener.COL_PROVINCE, dataToPass.getString(Covid.ITEM_PROVINCE));
             newRowValues.put(CovidOpener.COL_CASES, dataToPass.getInt(Covid.ITEM_CASE));
-            newRowValues.put(CovidOpener.COL_STATUS,dataToPass.getString(Covid.ITEM_STATUS));
+            newRowValues.put(CovidOpener.COL_STATUS, dataToPass.getString(Covid.ITEM_STATUS));
             long newRowId = db.insert(CovidOpener.TABLE_NAME, null, newRowValues);
 
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-            alertDialogBuilder.setTitle(R.string.attention)
-                    .setPositiveButton(getResources().getString(R.string.ok), (clk, arg) -> { });
-            alertDialogBuilder.setMessage(R.string.stored)
-                    .create().show();
-        });
+//            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+//            alertDialogBuilder.setTitle(R.string.attention)
+//                    .setPositiveButton(getResources().getString(R.string.ok), (clk, arg) -> { });
+//            alertDialogBuilder.setMessage(R.string.stored)
+//                    .create().show();
+            Snackbar snackBar = Snackbar.make(getView(), R.string.stored, Snackbar.LENGTH_SHORT);
+            snackBar.setAction("Undo", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLocation, new Fragment()).commit();
 
-        Button deleteButton = result.findViewById(R.id.delete);
-        deleteButton.setOnClickListener(click ->
-        {   parentActivity.getSupportFragmentManager().beginTransaction().remove(this).commit();
-            deleteFromDatabase(id);
+                    //TODO refrech the list..
+
+                }
+            }).show();
+
+
+
+//        Button deleteButton = result.findViewById(R.id.delete);
+//        deleteButton.setOnClickListener(click ->
+//        {   parentActivity.getSupportFragmentManager().beginTransaction().remove(this).commit();
+//            deleteFromDatabase(id);
 //            Covid parent = (Covid) getActivity();
-//            Intent goBack = new Intent();
+//            Intent goBack = new Intent(this, Covid.class);
 //            parent.setResult(Activity.RESULT_OK, goBack);
-        }
-        );
+//        }
+       } );
 
-        return result;
+            return result;
+
     }
     private void deleteFromDatabase(long id){
 

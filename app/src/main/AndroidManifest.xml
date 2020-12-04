@@ -31,7 +31,6 @@
         <activity android:name=".AudioActivity" /> <!-- <activity android:name=".ChatRoomActivity" /> -->
         <activity android:name=".Covid" />
         <activity android:name=".TicketMaster" />
-        <activity android:name=".FragmentCovidDetails" />
         <activity android:name=".EmptyTicket" />
     </application>
 
