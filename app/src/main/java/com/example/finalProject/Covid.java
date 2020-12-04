@@ -1,10 +1,10 @@
 /* Course Name: CST2335_021
  * Class name: CST2335 Graphical Interface Programming
  * Covid19 Case Data
- * Date: November 19, 2020
- * Student Name : Jihyun Park
+ * Date: December 7th, 2020
+ * Student Name : Jihyun Park as author
  * purpose: This is the final project with Teammates
- * This is the SQLite database
+ * This is about the Covid-19 research results
  */
 package com.example.finalProject;
 
@@ -59,11 +59,14 @@ import java.util.ArrayList;
 /**
  * This is the database for the covid-19 cases
  * This is the main class of Covid, extends AppCompatActivity.
- * It has saved
+ * this class implements NavigationView.OnNavigationItemSelectedListener
+ * This class contains clicklistener, fragments, toolbar and navigation menu
  * @ author Jihyun Park
  **/
 public class Covid extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+/*This is the variable for the all methods
+*@author Jihyun Park
+*/
     public static boolean isTablet;
     ArrayList<CovidEvent> list = new ArrayList<>();
     MyListAdapter myAdapter;
@@ -82,10 +85,6 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     CovidOpener covidOpener;
     String pattern = "yyyy-MM-dd";
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-//    String from = simpleDateFormat.format(new Date());
-//    String to = simpleDateFormat.format(new Date());
-//    String fromKey = simpleDateFormat.format(new Date());
-//    String toKey = simpleDateFormat.format(new Date());
     public final static String ITEM_COUNTRY = "COUNTRY";
     public final static String ITEM_CODE = "CODE";
     public final static String ITEM_PROVINCE = "PROVINCE";
@@ -100,9 +99,9 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
 
     /**
      * When the button, Covid-19, of the main page, connected with this page.
-     * When the search button is clicked the search button, stored data is showed the covid table which in contained all information that user wants.
+     * When the search button is clicked the search button, stored data is showed the Covid table which in contained all information that user wants.
      * Also recorded text will be stored on SharedPreferences as 'CovidFile' include  Country and date those are searched and period
-     *
+     * This activity creates for the cases of  Covid-19 the confirm cases in world around by Province and country
      * @author Jihyun Park
      */
     @Override
@@ -140,7 +139,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         fromText = findViewById(R.id.fromText);
         toText = findViewById(R.id.toText);
         searchText = findViewById(R.id.searchText);
-
+        // save date and country name
         sharedPref = getSharedPreferences("CovidFile", Context.MODE_PRIVATE);
 
         searchText.setText(sharedPref.getString(SAVE_COUNTRY, ""));
@@ -185,8 +184,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
                     })
                     .setNegativeButton("No", (click, arg) -> {
                     })
-                    .create().show();
-
+                   .create().show();
             return true;
         });
 
@@ -205,10 +203,10 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
                 newFragment.setArguments(dataToPass);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLocation, new Fragment()).commit();
                 myAdapter.notifyDataSetChanged();
-// remove, delete...etc
+
             } else {  // isPhone
                 Intent goToActivity = new Intent(this, EmptyCovid.class);
-                goToActivity.putExtras(dataToPass); //send data to next activi
+                goToActivity.putExtras(dataToPass); //send data to next activity
                 startActivity(goToActivity);
             }
         });
@@ -217,15 +215,14 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         helpButton.setOnClickListener((click) -> {
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
             alertBuilder.setTitle(R.string.helpTitle).setMessage(R.string.covidHelp)
-                    .setPositiveButton(R.string.confirm, (cl, arg) -> {
-                    }).create().show();
+                    .setPositiveButton(R.string.confirm, (cl, arg) -> { }).create().show();
         });
 
         repositButton = findViewById(R.id.repository);
-        repositButton.setOnClickListener( clickto -> {
+        repositButton.setOnClickListener( clickto ->{
             loadDataFromDatabase();
             repoAdapter.notifyDataSetChanged();
-                });
+        });
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -266,15 +263,13 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         return false;
     }
 
-    /*
-     * Extended BaseAdapter that is the bridge between a ListView and the data that backs the list.
+    /* Extended BaseAdapter that is the bridge between a ListView and the data that backs the list.
      * ListView can display any data provided that it is wrapped in a MyListAdapter.
      * all the methods are override from BaseAdapter
      * This is explin what is inside of the list, number of items, rows.
      * Row-layout that will be positioned at the specified row in the list.
      * @author Jihyun Park
-     *
-     * */
+     */
     private class MyListAdapter extends BaseAdapter {
 
         /*number of items in the list
@@ -292,7 +287,6 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
          * @param int position
          * @author Jihyun Park
          * */
-
         @Override
         public Object getItem(int position) {
             return list.get(position);
@@ -302,6 +296,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
          * Override
          * @author Jihyun Park
          * */
+
         @Override
         public long getItemId(int position) {
             return position;
@@ -320,16 +315,17 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             TextView coronaView = newView.findViewById(R.id.covidCases);
             coronaView.setText("province: " + covidResult.getProvince() + " , cases: " + covidResult.getCases());
             myAdapter.notifyDataSetChanged();
-
             return newView;
         }
-
-
     }
-
+/*
+* This is the Adapter extends BaseAdapter for the Load Repository
+* The function is the same as MyListAdapter
+* @author Jihyun Park
+* */
     private class RepoListAdapter extends BaseAdapter {
 
-        /*number of items in the list
+        /*number of items in the repoList
          * Override
          * Return size of the list
          * @author Jihyun Park
@@ -339,12 +335,11 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             return repoList.size();
         }
 
-        /* Objects go at row in the list
+        /* Objects go at row in the repoList
          * Override
          * @param int position
          * @author Jihyun Park
          * */
-
         @Override
         public Object getItem(int position) {
             return repoList.get(position);
@@ -359,7 +354,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             return position;
         }
 
-        /* this returns the layout that will be positioned at the specified row in the list.
+        /* this returns the layout that will be positioned at the specified row in the repoList.
          * this view is make a new row, set the text by row, and returns information to the table
          * Override
          * @author Jihyun Park
@@ -380,14 +375,15 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     /* this class has 3 important functions: doInBackground, onProgressUpdate, onPostExecute
      * In order for the interface to be responsive to user input, any long running tasks must be run
      * To start the thread, create an object and call execute()
+     * This class takes JSON array from the URL for the Covid-19 confirmed cases
      *@author: Jihyun Park
      */
     private class CovidRequest extends AsyncTask<String, Integer, String> {
 
         /* This is contains internet website which is contains information that users want
-         * connection with website, bring the data and set the informatino to the table
-         * doInBackground() – parameter is array type of String
-         * Override mothod
+         * connection with website, bring the data and set the information to the table
+         * doInBackground() parameter is array type of String
+         * Override method
          * @ Author: Jihyun Park
          */
         @Override
@@ -454,8 +450,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             Log.i("setProgress:", "" + value[0]);
         }
 
-        /*
-         * incoming parameter is the exact same object that was returned by doInBackground.
+        /* incoming parameter is the exact same object that was returned by doInBackground.
          * @param String fromDoInBackground
          * @Author Jihyun Park
          */
@@ -468,12 +463,11 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     @Override
     protected void onPause() {
         super.onPause();
-
     }
 
-    /*
-     * This is retrieve any privious data
-     * create table, put data into table
+/* This is retrieve any privious data that already stored in SQL databse
+     * create table, put data into table.
+     * This database will load repoList by order
      * @author Jihyun Park
      * */
     private void loadDataFromDatabase() {
@@ -504,11 +498,10 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         results.close();
     }
 
-    /**
-     * Stores at SharedPreferences
-     *
+    /* Stores history of the searched information at SharedPreferences
      * @param stringToSave will be stored as String value
-     * @param key          stringToSave.
+     * @param key, stringToSave.
+     * @author Jihyun Park
      */
     public void saveToSharedPreference(String stringToSave, String key) {
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -517,11 +510,9 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         myAdapter.notifyDataSetChanged();
     }
 
-    /**
-     * reference  professor's lecture
-     * Inflate the menu items for use in the action bar     *
+    /* reference  professor's lecture
+     * Inflate the menu items for use in the action bar
      * Manages the search function in the action bar.
-     *
      * @param menu The menu used in the action bar.
      */
     @Override
@@ -550,7 +541,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
      * this is the shared code as team
      * Navigates to the selected activity.
      * Based on the menu item click.
-     *
+     *  Inflate the menu items for use in the action bar
      * @param item The menu used in the action bar.
      */
     @SuppressLint("NonConstantResourceId")
@@ -586,7 +577,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     }
 
     /*
-     * this is the class of the basic information of the related Covid Event
+     * this is the class about the basic information of the related Covid Event
      * @author: Jihyun Park
      * */
      class CovidEvent {
