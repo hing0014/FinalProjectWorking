@@ -37,11 +37,12 @@
     <string name="open">open</string>
     <string name="close">close</string>
     <string name="help">Aidez-moi</string>
-    <string name="ticketMasterHelp">Entrez le nom de la ville que vous souhaitez rechercher. Entrez un rayon en miles pour étendre la recherche en dehors de la ville.</string>
+    <string name="ticketMasterHelp">Entrez le nom de la ville que vous souhaitez rechercher. Entrez un rayon en miles pour étendre la recherche en dehors de la ville. Sélectionnez Favoris pour afficher les Favoris.</string>
     <string name="ok">D\'accord</string>
     <string name="ticketMasterHelpTitle">RECHERCHE D\'ÉVÉNEMENTS TICKETMASTER</string>
     <string name="do_delete">Suppression d\'événement</string>
-    <string name="deletSure">Voulez-vous vraiment supprimer cet événement?</string>
+    <string name="deletConfirm">Voulez-vous vraiment supprimer cet événement?</string>
     <string name="saveToFavorites">Enregistrer dans les favoris</string>
     <string name="showFavorites" >Favoris</string>
+    <string name="added">Événement ajouté aux favoris</string>
 </resources>
