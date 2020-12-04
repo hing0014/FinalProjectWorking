@@ -181,6 +181,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
                     {
                         repoList.remove(pos);
                         covidDB.delete(CovidOpener.TABLE_NAME, CovidOpener.COL_ID + "=?", new String[]{Integer.toString(repoList.get((int)id).id)});
+                        repoAdapter.notifyDataSetChanged();
                     })
                     .setNegativeButton("No", (click, arg) -> {
                     })
