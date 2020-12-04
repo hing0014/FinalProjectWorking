@@ -69,10 +69,18 @@
                 android:layout_alignParentEnd="true"
                 />
             <Button
+                android:id="@+id/favorites"
+                android:layout_width="wrap_content"
+                android:layout_height="40sp"
+                android:layout_below="@+id/help"
+                android:text="@string/showFavorites"
+                android:layout_alignParentEnd="true"
+                />
+            <Button
                 android:id="@+id/searchButton"
                 android:layout_width="wrap_content"
-                android:layout_height="100sp"
-                android:layout_below="@+id/help"
+                android:layout_height="60sp"
+                android:layout_below="@+id/favorites"
                 android:text="@string/SearchButtonText"
                 android:layout_alignParentEnd="true"
                 />
