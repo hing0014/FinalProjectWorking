@@ -36,7 +36,7 @@
         android:orderInCategory="500"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView"
-        android:title="@string/SearchButtonText"/>
+        android:title="@string/help"/>
     <!-- This uses showAsAction=always, so look at icon= parameter -->
 
 </menu>

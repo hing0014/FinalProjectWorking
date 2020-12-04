@@ -16,7 +16,6 @@
         android:roundIcon="@mipmap/custom"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EmptyCovid"></activity>
         <!-- <action android:name="android.intent.action.MAIN" /> -->
         <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
         <!-- </intent-filter> -->
@@ -31,6 +30,7 @@
         <activity android:name=".AudioActivity" /> <!-- <activity android:name=".ChatRoomActivity" /> -->
         <activity android:name=".Covid" />
         <activity android:name=".TicketMaster" />
+        <activity android:name=".EmptyCovid"/>
         <activity android:name=".EmptyTicket" />
     </application>
 

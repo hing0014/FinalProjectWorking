@@ -69,7 +69,7 @@
     <string name="helpTitle">Help Center</string>
     <string name="covidHelp">This site shows the results of the confirmed cases Corona Virus. Please enter the country and date that you want to know. For example, Canada from 2020-10-20 to 2020-10-21, you can see the results of Canada confirmed cases by the Province.</string>
     <string name="confirm">OK</string>
-    <string name="repository">Repository</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="repository">Load Repository</string>
+    <string name="confirm1">CONFIRM</string>
+
 </resources>

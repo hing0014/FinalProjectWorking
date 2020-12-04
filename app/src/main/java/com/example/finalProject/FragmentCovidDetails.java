@@ -31,10 +31,10 @@ public class FragmentCovidDetails extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        covidOpener = new CovidOpener(getContext());
-        covidDB = covidOpener.getWritableDatabase();
-
+//
+//        covidOpener = new CovidOpener(getContext());
+//        covidDB = covidOpener.getWritableDatabase();
+//
         dataToPass = getArguments(); // bundle back
         id = dataToPass.getLong(Covid.ITEM_ID);
         // Inflate the layout for this fragment
@@ -63,7 +63,7 @@ public class FragmentCovidDetails extends Fragment {
         backButton.setOnClickListener(click ->
         {
             parentActivity.getSupportFragmentManager().beginTransaction().remove(this).commit();
-            // TODO refrech the list...
+            parentActivity.onBackPressed();
         });
 
         Button storeButton = result.findViewById(R.id.store);
@@ -80,41 +80,12 @@ public class FragmentCovidDetails extends Fragment {
             newRowValues.put(CovidOpener.COL_STATUS, dataToPass.getString(Covid.ITEM_STATUS));
             long newRowId = db.insert(CovidOpener.TABLE_NAME, null, newRowValues);
 
-//            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-//            alertDialogBuilder.setTitle(R.string.attention)
-//                    .setPositiveButton(getResources().getString(R.string.ok), (clk, arg) -> { });
-//            alertDialogBuilder.setMessage(R.string.stored)
-//                    .create().show();
             Snackbar snackBar = Snackbar.make(getView(), R.string.stored, Snackbar.LENGTH_SHORT);
-            snackBar.setAction("Undo", new View.OnClickListener() {
+            snackBar.setAction(R.string.confirm1, new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLocation, new Fragment()).commit();
-
-                    //TODO refrech the list..
-
-                }
-            }).show();
-
-
-
-//        Button deleteButton = result.findViewById(R.id.delete);
-//        deleteButton.setOnClickListener(click ->
-//        {   parentActivity.getSupportFragmentManager().beginTransaction().remove(this).commit();
-//            deleteFromDatabase(id);
-//            Covid parent = (Covid) getActivity();
-//            Intent goBack = new Intent(this, Covid.class);
-//            parent.setResult(Activity.RESULT_OK, goBack);
-//        }
-       } );
-
-            return result;
-
-    }
-    private void deleteFromDatabase(long id){
-
-        covidDB.delete(CovidOpener.TABLE_NAME, CovidOpener.COL_ID + "= ?", new String[]{Long.toString(id)});
-
+                public void onClick(View v) {   } }).show();
+         });
+        return result;
     }
 }
 

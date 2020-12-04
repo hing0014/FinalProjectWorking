@@ -9,26 +9,15 @@
         android:id="@+id/covidList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="900"
         android:gravity="center_vertical"></TextView>
 
-    <LinearLayout
+    <Button
+        android:id="@+id/back1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="bottom">
+        android:layout_weight="50"
+        android:text="@string/back" />
 
 
-        <Button
-            android:id="@+id/back1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="50"
-            android:text="@string/back" />
-
-        <Button
-            android:id="@+id/delete"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="50"
-            android:text="@string/delete1" />
-    </LinearLayout>
 </LinearLayout>

@@ -14,16 +14,16 @@
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
-        android:layout_width="600dp"
-        android:layout_height="700dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         tools:openDrawer="start">
 
         <RelativeLayout
             android:id="@+id/layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:openDrawer="start"
-            tools:ignore="UseSwitchCompatOrMaterialXml">
+            tools:ignore="UseSwitchCompatOrMaterialXml"
+            tools:openDrawer="start">
 
             <EditText
                 android:id="@+id/searchText"
@@ -58,21 +58,16 @@
                 android:layout_toRightOf="@id/searchText"
                 app:srcCompat="@drawable/magnify" />
 
-            <Button
-                android:id="@+id/help"
-                android:layout_width="80dp"
-                android:layout_height="50dp"
-                android:layout_toRightOf="@id/magnify"
-                android:text="@string/help" />
 
             <Button
                 android:id="@+id/repository"
-                android:layout_width="160dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/magnify"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
                 android:layout_toEndOf="@id/toText"
                 android:text="@string/repository" />
-
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -85,8 +80,18 @@
             <ListView
                 android:id="@+id/listView"
                 android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_below="@+id/progressBar" >
+
+            </ListView>
+
+            <ListView
+                android:id="@+id/repositoryView"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/progressBar" />
+                android:layout_below="@+id/listView"
+                android:background="#EBF869" />
+
         </RelativeLayout>
 
         <com.google.android.material.navigation.NavigationView

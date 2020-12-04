@@ -60,7 +60,7 @@ import java.util.Date;
 /**
  * This is the database for the covid-19 cases
  * This is the main class of Covid, extends AppCompatActivity.
- *
+ * It has saved
  * @ author Jihyun Park
  **/
 public class Covid extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -68,8 +68,13 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     public static boolean isTablet;
     ArrayList<CovidEvent> list = new ArrayList<>();
     MyListAdapter myAdapter;
+
+    ArrayList<CovidEvent> repoList = new ArrayList<>();
+    RepoListAdapter repoAdapter;
+
     ImageButton searchButton;
     EditText searchText, fromText, toText;
+
     Button helpButton, repositButton;
     ProgressBar progressBar;
     String country, countryCode, province, status;
@@ -106,9 +111,14 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_covid);
 
-        ListView myList = findViewById(R.id.listView);
+        ListView searchView = findViewById(R.id.listView);
         myAdapter = new MyListAdapter();
-        myList.setAdapter(myAdapter);
+        searchView.setAdapter(myAdapter);
+
+
+        ListView repoView = findViewById(R.id.repositoryView);
+        repoAdapter = new RepoListAdapter();
+        repoView.setAdapter(repoAdapter);
 
         boolean isTablet = findViewById(R.id.fragmentLocation) != null; //check if the FrameLayout is loaded
 
@@ -122,8 +132,6 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        loadDataFromDatabase();
 
         progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
@@ -167,25 +175,22 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             myAdapter.notifyDataSetChanged();
         });
 
-        myList.setOnItemLongClickListener((p, b, pos, id) -> {
+        repoView.setOnItemLongClickListener((p, b, pos, id) -> {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
             alertDialogBuilder.setTitle(getResources().getString(R.string.attention)).setMessage(R.string.deletSure)
                     .setPositiveButton(R.string.yes, (click, arg) ->
                     {
-                        list.remove(pos);
-                        //list.findViewById(0);
-                        covidDB.delete(CovidOpener.TABLE_NAME, CovidOpener.COL_ID + "=?", new String[]{Integer.toString(list.get((int)id).id)});
-                        myAdapter.notifyDataSetChanged();
+                        repoList.remove(pos);
+                        covidDB.delete(CovidOpener.TABLE_NAME, CovidOpener.COL_ID + "=?", new String[]{Integer.toString(repoList.get((int)id).id)});
                     })
                     .setNegativeButton("No", (click, arg) -> {
                     })
                     .create().show();
 
-            myAdapter.notifyDataSetChanged();
             return true;
         });
 
-        myList.setOnItemClickListener((lv, item, position, id) -> {
+        searchView.setOnItemClickListener((lv, item, position, id) -> {
             Bundle dataToPass = new Bundle();
             dataToPass.putString(ITEM_COUNTRY, list.get(position).country);
             dataToPass.putString(ITEM_CODE, list.get(position).countryCode);
@@ -208,20 +213,19 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             }
         });
 
-        helpButton = findViewById(R.id.help);
-        helpButton.setOnClickListener((click) -> {
-            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-            alertBuilder.setTitle(R.string.helpTitle).setMessage(R.string.covidHelp)
-                    .setPositiveButton(R.string.confirm, (cl, arg) -> {
-                    }).create().show();
-        });
-
-//        repositButton = findViewById(R.id.repository);
-//        repositButton.setOnClickListener( clickto -> {
-//            Intent newfragment = new Intent (this, FragmentCovidList.class);
-//            newfragment.putExtra(dataToPass);
-//            startActivity(newfragment);
+//        helpButton = findViewById(R.id.help);
+//        helpButton.setOnClickListener((click) -> {
+//            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+//            alertBuilder.setTitle(R.string.helpTitle).setMessage(R.string.covidHelp)
+//                    .setPositiveButton(R.string.confirm, (cl, arg) -> {
+//                    }).create().show();
 //        });
+
+        repositButton = findViewById(R.id.repository);
+        repositButton.setOnClickListener( clickto -> {
+            loadDataFromDatabase();
+//            repoAdapter.notifyDataSetChanged();
+                });
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -316,12 +320,62 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             TextView coronaView = newView.findViewById(R.id.covidCases);
             coronaView.setText("province: " + covidResult.getProvince() + " , cases: " + covidResult.getCases());
             myAdapter.notifyDataSetChanged();
+
             return newView;
         }
 
 
     }
 
+    private class RepoListAdapter extends BaseAdapter {
+
+        /*number of items in the list
+         * Override
+         * Return size of the list
+         * @author Jihyun Park
+         * */
+        @Override
+        public int getCount() {
+            return repoList.size();
+        }
+
+        /* Objects go at row in the list
+         * Override
+         * @param int position
+         * @author Jihyun Park
+         * */
+
+        @Override
+        public Object getItem(int position) {
+            return repoList.get(position);
+        }
+
+        /* database id at row
+         * Override
+         * @author Jihyun Park
+         * */
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        /* this returns the layout that will be positioned at the specified row in the list.
+         * this view is make a new row, set the text by row, and returns information to the table
+         * Override
+         * @author Jihyun Park
+         * */
+        @Override
+        public View getView(int position, View v, ViewGroup parent) {
+            CovidEvent covidResult = repoList.get(position);
+            LayoutInflater inflater = getLayoutInflater();
+            View newView = inflater.inflate(R.layout.covid_row_layout, parent, false);
+            TextView coronaView = newView.findViewById(R.id.covidCases);
+            coronaView.setText("province: " + covidResult.getProvince() + " , cases: " + covidResult.getCases());
+            repoAdapter.notifyDataSetChanged();
+
+            return newView;
+        }
+    }
 
     /* this class has 3 important functions: doInBackground, onProgressUpdate, onPostExecute
      * In order for the interface to be responsive to user input, any long running tasks must be run
@@ -445,7 +499,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             String status = results.getString(statusColumnIndex);
             int id = results.getInt(idColumnIndex);
 
-            list.add(new CovidEvent(country, countryCode, province, cases, status, id));
+            repoList.add(new CovidEvent(country, countryCode, province, cases, status, id));
         }
         results.close();
     }

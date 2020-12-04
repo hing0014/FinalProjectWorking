@@ -10,14 +10,13 @@ public class EmptyCovid extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emptycovid);
 
-            Bundle dataToPass = getIntent().getExtras(); //get the data that was passed from Covid.class
+        Bundle dataToPass = getIntent().getExtras(); //get the data that was passed from Covid.class
 
-            FragmentCovidDetails dFragment = new FragmentCovidDetails();
-            dFragment.setArguments( dataToPass ); //pass data to the the fragment
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragmentLocation, dFragment)
-                    .commit();
-
+        FragmentCovidDetails dFragment = new FragmentCovidDetails();
+        dFragment.setArguments( dataToPass ); //pass data to the the fragment
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentLocation, dFragment)
+                .commit();
     }
 }
