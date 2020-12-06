@@ -178,8 +178,8 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             alertDialogBuilder.setTitle(getResources().getString(R.string.attention)).setMessage(R.string.deletSure)
                     .setPositiveButton(R.string.yes, (click, arg) ->
                     {
-                        repoList.remove(pos);
                         covidDB.delete(CovidOpener.TABLE_NAME, CovidOpener.COL_ID + "=?", new String[]{Integer.toString(repoList.get((int)id).id)});
+                        repoList.remove(pos);
                         repoAdapter.notifyDataSetChanged();
                     })
                     .setNegativeButton("No", (click, arg) -> {
