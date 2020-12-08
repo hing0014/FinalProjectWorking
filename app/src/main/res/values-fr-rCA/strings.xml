@@ -47,4 +47,21 @@
     <string name="do_delete">Suppression d\'événement</string>
     <string name="deletSure">Voulez-vous vraiment supprimer cet événement?</string>
 
+    <string name="recipeTitle">Recipe Name</string>
+    <string name="recipeIngredients">Recipe Ingredients</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="goToBrowser">Go to Recipe in Browser</string>
+    <string name="backButtonRecipe">Back</string>
+    <string name="alertToRecipeBrowser">Do you want to look at this recipe in a browser?</string>
+    <string name="deleteRecipe">Delete Recipe</string>
+    <string name="deleteRecipeConfirmation">Are you sure you want to delete this recipe?</string>
+    <string name="homeItem">Home Page</string>
+    <string name="recipeItem">Recipe</string>
+    <string name="ticketItem">Ticket Master</string>
+    <string name="helpItem">Help</string>
+    <string name="covidItem">Covid-19 Data</string>
+    <string name="audioItem">Audio Database</string>
+    <string name="helpTitle">How To Use Recipe Search Page</string>
+    <string name="helpMessage">To use, input the name of a recipe, the more general the term, the more recipes that will show in the results</string>
+    <string name="helpOk">Ok</string>
 </resources>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/homeItem"
+        android:title="@string/homeItem"
+        android:icon="@drawable/home"
+        android:orderInCategory="50"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/recipeItem"
+        android:title="@string/recipeItem"
+        android:icon="@drawable/food"
+        android:orderInCategory="100"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/helpItem"
+        android:title="@string/helpItem"
+        android:icon="@drawable/help_icon"
+        android:orderInCategory="200"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/ticketItem"
+        android:title="@string/ticketItem"
+        android:icon="@drawable/ticket"
+        android:orderInCategory="200"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/covidItem"
+        android:title="@string/covidItem"
+        android:icon="@drawable/bacteria"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/audioItem"
+        android:title="@string/audioItem"
+        android:icon="@drawable/music"
+        android:orderInCategory="50"
+        app:showAsAction="never"/>
+
+</menu>

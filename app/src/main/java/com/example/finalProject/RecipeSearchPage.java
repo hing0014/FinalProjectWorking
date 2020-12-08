@@ -2,25 +2,43 @@ package com.example.finalProject;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.drm.DrmStore;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.navigation.NavigationView;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -30,6 +48,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This class is the main activity for the Recipe Search Page, it manipulates the listview via various methods and classes seen below
@@ -39,7 +58,7 @@ import java.util.ArrayList;
  * Lab Section 021
  * RecipeSearchPage Class
  */
-public class RecipeSearchPage extends AppCompatActivity {
+public class RecipeSearchPage extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     /**
      *Where the user will search for recipes
@@ -60,19 +79,35 @@ public class RecipeSearchPage extends AppCompatActivity {
     /**
      *An array of recipes; where the recipes will be stored once retrieved from database/website
      */
-    ArrayList<RecipeGetters> recipes = new ArrayList<>();
+    private ArrayList<RecipeGetters> recipes = new ArrayList<>();
     /**
      * Instance of the adapter class used to inflate the listview with rows of found recipes
      */
-    RecipePageAdapter theAdapter;
+    private RecipePageAdapter theAdapter;
     /**
      * Instance of the database class to store and load the database of recipes
      */
-    SQLiteDatabase recipeDB;
+    private static SQLiteDatabase recipeDB;
     /**
      * Instance of the AsyncTask class that runs a background thread to retrieve the recipes from the website
      */
-    ViewRecipesFromURL seeRecipes = new ViewRecipesFromURL();
+    //ViewRecipesFromURL seeRecipes = new ViewRecipesFromURL();
+    FrameLayout fragmentFrame;
+    FragmentRecipeDetails recipeFrag = null;
+    static boolean isTablet = false;
+    SharedPreferences recipePrefs;
+    int recipesArrayLength;
+    long newId = 0;
+    String recipeTitle = "title";
+    String title;
+    String href;
+    String ingredients;
+
+    public static final String RECIPE_TITLE = "TITLE";
+    public static final String RECIPE_HREF = "HREF";
+    public static final String RECIPE_INGREDIENTS = "INGREDIENTS";
+    public static final String RECIPE_ID = "_id";
+
 
     /**
      * Initializes the variables above, loads the database, and calls click listeners for the search button and listview
@@ -82,26 +117,90 @@ public class RecipeSearchPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_search_page);
-        searchBar = findViewById(R.id.searchRecipe);
+
+        searchBar = findViewById(R.id.searchRecipe); //the edit text
         searchRecipes = findViewById(R.id.searchButtonRecipe);
+        if(recipes.size() != 0){
+            theAdapter.notifyDataSetChanged();
+        }
+
+        fragmentFrame = findViewById(R.id.recipeFrame);
+        if(fragmentFrame != null){
+            isTablet = true;
+        }
+
+        Toolbar recipeToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(recipeToolbar);
+        DrawerLayout theDrawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggleDrawer = new ActionBarDrawerToggle(this, theDrawer, recipeToolbar, R.string.open, R.string.close);
+        theDrawer.addDrawerListener(toggleDrawer);
+        toggleDrawer.syncState();
+
         loadingBar = findViewById(R.id.recipeProgress);
         loadingBar.setVisibility(View.VISIBLE);
         recipeList = findViewById(R.id.recipesList);
+
         loadFromDatabase();
+
+        recipePrefs = getSharedPreferences("file", Context.MODE_PRIVATE);
+
+        String preferredRecipe = recipePrefs.getString(recipeTitle, "");
+        searchBar.setText(preferredRecipe);
+
         theAdapter = new RecipePageAdapter();
         recipeList.setAdapter(theAdapter);
+        //Add help button
+        //Add favourite button
+        //Add snackbar
 
+        AtomicReference<ViewRecipesFromURL> recipeUrlQuery = new AtomicReference<>(new ViewRecipesFromURL());
         searchRecipes.setOnClickListener( click -> {
-            String searchResult = searchBar.toString();
-            if(URLUtil.isValidUrl("http://www.recipepuppy.com/api/?q="+ searchResult +"&p=3&format=xml")){
-                seeRecipes.execute("http://www.recipepuppy.com/api/?q="+ searchResult +"&p=3&format=xml");
+            title = searchBar.getText().toString();
+
+            if(URLUtil.isValidUrl("http://www.recipepuppy.com/api/?q="+ title +"&p=3&format=xml")){
+                loadingBar.setProgress((0));
+                loadingBar.setVisibility(View.VISIBLE);
+                recipes.clear();
+                recipeUrlQuery.get().execute("http://www.recipepuppy.com/api/?q="+ title +"&p=3&format=xml");
+                recipeUrlQuery.set(new ViewRecipesFromURL());
             }
             else{
                 Toast.makeText(getApplicationContext(), "Recipes not found", Toast.LENGTH_SHORT).show();
+
             }
         });
 
-        recipeList.setOnItemClickListener((parent, view, pos, id) -> showRecipe(pos));
+        recipeList.setOnItemClickListener((parent, view, pos, id) -> {
+            Bundle setData = new Bundle();
+            RecipeGetters getRecipes = recipes.get(pos);
+            setData.putString(RECIPE_TITLE, getRecipes.getTitle());
+            setData.putString(RECIPE_HREF, getRecipes.getHrefURL());
+            setData.putString(RECIPE_INGREDIENTS, getRecipes.getIngredients());
+
+            if(isTablet){
+                recipeFrag = new FragmentRecipeDetails();
+                recipeFrag.setArguments(setData);
+                getSupportFragmentManager().beginTransaction().replace(R.id.recipeFrame, recipeFrag).commit();
+            }
+            else{
+                Intent phoneFragment = new Intent(RecipeSearchPage.this, EmptyRecipe.class);
+                phoneFragment.putExtras(setData);
+                startActivity(phoneFragment);
+            }
+        });
+
+        recipeList.setOnItemLongClickListener( (parent, view, pos, id) -> {
+            AlertDialog.Builder deleteBuilder = new AlertDialog.Builder(this);
+            deleteBuilder.setTitle(getResources().getString(R.string.deleteRecipe));
+            deleteBuilder.setMessage(getResources().getString(R.string.deleteRecipeConfirmation));
+            deleteBuilder.setPositiveButton((R.string.yes), (click, arg) -> {
+                RecipeGetters selectedRecipe = recipes.get(pos);
+                recipeDB.delete(TicketMasterOpener.TABLE_NAME, RecipePageOpener.COL_ID + "= ?", new String[] {Long.toString(selectedRecipe.getRecipeID())});
+            });
+            deleteBuilder.setNegativeButton(R.string.no, (click, arg) -> { });
+            deleteBuilder.create().show();
+            return true;
+        });
 
         //ViewRecipesFromURL viewRecipes = new ViewRecipesFromURL();
         //viewRecipes.execute("http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3&format=xml");//should I split this url?
@@ -118,6 +217,9 @@ public class RecipeSearchPage extends AppCompatActivity {
          */
         @Override
         public int getCount() {
+            if(recipes == null){
+                return 0;
+            }
             return recipes.size();
         }
 
@@ -156,6 +258,7 @@ public class RecipeSearchPage extends AppCompatActivity {
             if(view==null) view = inflater.inflate(R.layout.recipe_row_layout, parent, false);
             TextView rowText = view.findViewById(R.id.recipeTextRow);
             rowText.setText(getRecipe.getTitle());
+            //ImageView recipeImage = view.findViewById(R.id.recipeIcon);
 
             return view;
         }
@@ -185,13 +288,14 @@ public class RecipeSearchPage extends AppCompatActivity {
 
             recipes.add(new RecipeGetters(title, href, ingredients, id));
         }
+        results.close();
     }
 
     /**
      * Shows an alert dialog that describes the recipe once clicked from the listview, allowing the browser to open or for the recipe to be favourited
      * @param position position of the recipe in the array of recipes
      */
-    protected void showRecipe(int position){
+   /* protected void showRecipe(int position){
         RecipeGetters recipe = recipes.get(position);
         //View recipeAlert_view = getLayoutInflater().inflate(R.layout.recipe_alertdialog_layout, null);
 
@@ -204,7 +308,7 @@ public class RecipeSearchPage extends AppCompatActivity {
         builder.setNeutralButton("Open in Browser", (click, b) -> {
 
         });
-    }
+    } */
 
     /**
      * Creates a background thread to retrieve external data and store it internally, all while allowing the progress to be tracked
@@ -241,11 +345,11 @@ public class RecipeSearchPage extends AppCompatActivity {
                             xpp.next();
                             title = xpp.getText();
                         }
-                        if (xpp.getName().equals("href")){
+                        else if (xpp.getName().equals("href")){
                             xpp.next();
                             href = xpp.getText();
                         }
-                        if (xpp.getName().equals("ingredients")){
+                        else if (xpp.getName().equals("ingredients")){
                             xpp.next();
                             ingredients = xpp.getText();
                         }
@@ -284,5 +388,91 @@ public class RecipeSearchPage extends AppCompatActivity {
             loadingBar.setVisibility(View.INVISIBLE);
             theAdapter.notifyDataSetChanged();
         }
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EditText retrieveRecipeSearch = findViewById(R.id.searchRecipe);
+        String retrieveRecipe = retrieveRecipeSearch.getText().toString();
+        SharedPreferences.Editor editRecipes = recipePrefs.edit();
+        editRecipes.putString(retrieveRecipe, recipeTitle);
+        editRecipes.apply();
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.recipe_menu, menu);
+        return true;
+    }
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        Intent nextActivity;
+        switch(item.getItemId()){
+            case R.id.homeItem:
+                finish();
+                break;
+            case R.id.recipeItem:
+                nextActivity = new Intent(RecipeSearchPage.this, RecipeSearchPage.class);
+                startActivity(nextActivity);
+                break;
+            case R.id.helpItem:
+                AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
+                helpDialog.setTitle(R.string.helpTitle);
+                helpDialog.setMessage(R.string.helpMessage);
+                helpDialog.create().show();
+                helpDialog.setNeutralButton(R.string.helpOk, (click, arg)->{ });
+                break;
+            case R.id.ticketItem:
+                nextActivity = new Intent(RecipeSearchPage.this, TicketMaster.class);
+                startActivity(nextActivity);
+                break;
+            case R.id.covidItem:
+                nextActivity = new Intent(RecipeSearchPage.this, Covid.class);
+                startActivity(nextActivity);
+                break;
+            case R.id.audioItem:
+                nextActivity = new Intent(RecipeSearchPage.this, AudioActivity.class);
+                startActivity(nextActivity);
+                break;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item){
+
+        Intent nextPage;
+        switch(item.getItemId()){
+            case R.id.homeItem:
+                finish();
+                break;
+            case R.id.recipeItem:
+                nextPage = new Intent(RecipeSearchPage.this, RecipeSearchPage.class);
+                startActivity(nextPage);
+                break;
+            case R.id.helpItem:
+                AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
+                helpDialog.setTitle(R.string.helpTitle);
+                helpDialog.setMessage(R.string.helpMessage);
+                helpDialog.create().show();
+                helpDialog.setNeutralButton(R.string.helpOk, (click, arg)->{ });
+                break;
+            case R.id.ticketItem:
+                nextPage = new Intent(RecipeSearchPage.this, TicketMaster.class);
+                startActivity(nextPage);
+                break;
+            case R.id.covidItem:
+                nextPage = new Intent(RecipeSearchPage.this, Covid.class);
+                startActivity(nextPage);
+                break;
+            case R.id.audioItem:
+                nextPage = new Intent(RecipeSearchPage.this, AudioActivity.class);
+                startActivity(nextPage);
+                break;
+        }
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return false;
     }
 }
