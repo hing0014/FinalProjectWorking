@@ -418,7 +418,7 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
                 break;
             case R.id.helpItem:
                 AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
-                helpDialog.setTitle(R.string.helpTitle);
+                helpDialog.setTitle(R.string.helpTitleRecipe);
                 helpDialog.setMessage(R.string.helpMessage);
                 helpDialog.create().show();
                 helpDialog.setNeutralButton(R.string.helpOk, (click, arg)->{ });
@@ -453,7 +453,7 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
                 break;
             case R.id.helpItem:
                 AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
-                helpDialog.setTitle(R.string.helpTitle);
+                helpDialog.setTitle(R.string.helpTitleRecipe);
                 helpDialog.setMessage(R.string.helpMessage);
                 helpDialog.create().show();
                 helpDialog.setNeutralButton(R.string.helpOk, (click, arg)->{ });

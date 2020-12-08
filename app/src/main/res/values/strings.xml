@@ -87,7 +87,7 @@
     <string name="helpItem">Help</string>
     <string name="covidItem">Covid-19 Data</string>
     <string name="audioItem">Audio Database</string>
-    <string name="helpTitle">How To Use Recipe Search Page</string>
+    <string name="helpTitleRecipe">How To Use Recipe Search Page</string>
     <string name="helpMessage">To use, input the name of a recipe, the more general the term, the more recipes that will show in the results</string>
     <string name="helpOk">Ok</string>
     <string name="deletConfirm">Are you sure you would like to delete this event?</string>
