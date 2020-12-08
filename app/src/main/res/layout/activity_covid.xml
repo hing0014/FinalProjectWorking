@@ -1,63 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="top"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/searchText"
-        android:layout_width="340dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/searchText"
-        android:inputType="textPersonName"
-        android:visibility="visible" />
-
-    <EditText
-        android:id="@+id/fromText"
-        android:layout_width="170dp"
-        android:layout_height="wrap_content"
-        android:gravity="left"
-        android:layout_below="@id/searchText"
-        android:hint="@string/from">
-    </EditText>
-
-    <EditText
-        android:id="@+id/toText"
-        android:layout_width="170dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="10"
-        android:layout_below="@id/searchText"
-        android:layout_toRightOf="@id/fromText"
-        android:hint="@string/to">
-    </EditText>
-
-    <ImageButton
-        android:id="@+id/magnify"
-        android:layout_width="650dp"
-        android:layout_height="100dp"
-        android:layout_toRightOf="@id/searchText"
-        app:srcCompat="@drawable/magnify" />
-
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/fromText"
-        android:visibility="invisible" />
+        android:layout_height="wrap_content" />
 
-    <ListView
-        android:id="@+id/listView"
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/progressBar"
-        android:layout_marginTop="25dp" >
+        tools:openDrawer="start">
 
-    </ListView>
+        <RelativeLayout
+            android:id="@+id/layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:ignore="UseSwitchCompatOrMaterialXml"
+            tools:openDrawer="start">
 
-</RelativeLayout>
+            <EditText
+                android:id="@+id/searchText"
+                android:layout_width="216dp"
+                android:layout_height="wrap_content"
+                android:hint="@string/searchText"
+                android:inputType="textPersonName"
+                android:visibility="visible" />
+
+            <EditText
+                android:id="@+id/fromText"
+                android:layout_width="108dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/searchText"
+                android:hint="@string/from"
+                android:textSize="14dp" />
+
+            <EditText
+                android:id="@+id/toText"
+                android:layout_width="108dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/searchText"
+                android:layout_toEndOf="@id/fromText"
+                android:hint="@string/to"
+                android:textSize="14dp" />
+
+            <ImageButton
+                android:id="@+id/magnify"
+                android:layout_width="85dp"
+                android:layout_height="50dp"
+                android:layout_toEndOf="@id/toText"
+                android:layout_toRightOf="@id/searchText"
+                app:srcCompat="@drawable/magnify" />
+
+
+            <Button
+                android:id="@+id/help"
+                android:layout_width="85dp"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/magnify"
+                android:text="@string/help" />
+
+            <Button
+                android:id="@+id/repository"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/magnify"
+                android:layout_toEndOf="@id/toText"
+                android:text="@string/repository" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fromText"
+                android:visibility="invisible" />
+
+            <ListView
+                android:id="@+id/listView"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_below="@+id/progressBar" >
+
+            </ListView>
+
+            <ListView
+                android:id="@+id/repositoryView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/listView"
+                android:background="#EBF869" />
+
+        </RelativeLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            app:headerLayout="@layout/header_layout"
+            app:menu="@menu/example_menu" />
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+</LinearLayout>

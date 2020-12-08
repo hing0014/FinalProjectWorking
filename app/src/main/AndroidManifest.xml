@@ -32,6 +32,7 @@
         <activity android:name=".Covid" />
         <activity android:name=".TicketMaster" />
         <activity android:name=".CovidDetails" />
+        <activity android:name=".EmptyCovid"/>
         <activity android:name=".EmptyTicket" />
     </application>
 
