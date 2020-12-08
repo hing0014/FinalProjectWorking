@@ -14,11 +14,11 @@ public class RecipeGetters {
     /**
      * the recipe title, recipe url, and recipe ingredients to be initialized
      */
-    protected String title, hrefURL, ingredients;
+    public String title, hrefURL, ingredients;
     /**
      * the id for each recipe in the database
      */
-    protected long recipeID;
+    public long recipeID;
 
     /**
      * creates a new recipe in the database based on the attributes from the given file

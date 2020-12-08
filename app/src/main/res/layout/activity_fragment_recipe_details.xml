@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".RecipeSearchPage">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/fragmentRecipeIcon"
+            android:layout_width="408dp"
+            android:layout_height="94dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="3dp"
+            android:src="@drawable/recipe_icon_placeholder"
+            android:contentDescription="@string/recipeIconDesc" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recipeTitleFragment"
+            android:text="@string/recipeTitle"
+            android:layout_below="@id/fragmentRecipeIcon"
+            android:textSize="17sp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recipeIngredientsFragment"
+            android:text="@string/recipeIngredients"
+            android:layout_below="@id/recipeTitleFragment"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ingredientsFragment"
+            android:text="@string/ingredients"
+            android:layout_below="@id/recipeIngredientsFragment"
+            android:textSize="17sp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/goToBrowserButtonFragment"
+            android:text="@string/goToBrowser"
+            android:layout_below="@id/ingredientsFragment"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/recipeFragmentBackButton"
+            android:text="@string/backButtonRecipe"/>
+
+
+    </RelativeLayout>
+
+</FrameLayout>
