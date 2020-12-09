@@ -156,8 +156,8 @@ public class TicketMaster extends AppCompatActivity
                     .create().show();
         });
 
-        Button favbutton = findViewById(R.id.favorites);
-        favbutton.setOnClickListener(click ->
+        Button favoritebutton = findViewById(R.id.favorites);
+        favoritebutton.setOnClickListener(click ->
         {
             events.clear();
             loadDataFromDatabase();
