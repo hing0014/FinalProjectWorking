@@ -52,6 +52,19 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/addFavouriteRecipe"
+            android:text="@string/saveToFavorites"
+            android:layout_below="@id/goToBrowserButtonFragment"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/detailsSnackbar"
+            android:layout_above="@+id/recipeFragmentBackButton"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:id="@+id/recipeFragmentBackButton"
             android:text="@string/backButtonRecipe"/>

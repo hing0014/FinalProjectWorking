@@ -14,12 +14,34 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class RecipePageOpener extends SQLiteOpenHelper{
 
+    /**
+     * The name of the database
+     */
     protected final static String DATABASE_NAME = "RecipesDB";
+    /**
+     * The version number of the database, increasing or decreasing the version number calls an upgrade
+     * or downgrade method to change the database
+     */
     protected final static int VERSION_NUM = 1;
+    /**
+     * The table name for the database to create and reference
+     */
     public final static String TABLE_NAME = "RECIPES";
+    /**
+     * The title column stores the name of the recipe in the title column
+     */
     public final static String COL_TITLE = "TITLE";
+    /**
+     * The Href column stores the recipe's url
+     */
     public final static String COL_HREF = "HREF";
+    /**
+     * The string of ingredients stored in the Ingredients column
+     */
     public final static String COL_INGREDIENTS = "INGREDIENTS";
+    /**
+     * The row id of the recipe in the database
+     */
     public final static String COL_ID = "_id";
 
     /**
