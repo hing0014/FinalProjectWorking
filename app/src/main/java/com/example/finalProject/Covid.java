@@ -66,7 +66,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
 /*This is the variable for the all methods
 *@author Jihyun Park
 */
-    public static boolean isTablet;
+
     ArrayList<CovidEvent> list = new ArrayList<>();
     MyListAdapter myAdapter;
 
@@ -96,7 +96,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     public final static String ITEM_ISSTORED = "isStored";
     private static SharedPreferences sharedPref;
     private FragmentManager fm;
-
+    public static boolean isTablet;
     /**
      * When the button, Covid-19, of the main page, connected with this page.
      * When the search button is clicked the search button, stored data is showed the Covid table which in contained all information that user wants.
@@ -118,7 +118,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         repoAdapter = new RepoListAdapter();
         repoView.setAdapter(repoAdapter);
 
-        boolean isTablet = findViewById(R.id.fragmentLocation) != null; //check if the FrameLayout is loaded
+        isTablet = findViewById(R.id.fragmentLocation) != null; //check if the FrameLayout is loaded
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
