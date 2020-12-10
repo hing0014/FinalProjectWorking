@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".FragmentCovidDetails">
+    android:id="@+id/frameLocation">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="70"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TextView
@@ -23,14 +19,13 @@
             android:id="@+id/country"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20dp"/>
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/conCode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20dp"/>
-
+            android:textSize="20dp" />
 
         <TextView
             android:id="@+id/province"
@@ -48,14 +43,13 @@
             android:id="@+id/status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20dp"/>
-
+            android:textSize="20dp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="bottom"
+        android:layout_alignParentBottom="true"
         android:orientation="horizontal">
 
         <Button
@@ -71,6 +65,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="50"
             android:text="@string/store" />
-
     </LinearLayout>
-</LinearLayout>
+
+</RelativeLayout>

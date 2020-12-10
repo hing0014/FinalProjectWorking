@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -16,11 +15,12 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
         tools:openDrawer="start">
 
         <RelativeLayout
             android:id="@+id/layout"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             tools:ignore="UseSwitchCompatOrMaterialXml"
             tools:openDrawer="start">
@@ -58,6 +58,7 @@
                 android:layout_toRightOf="@id/searchText"
                 app:srcCompat="@drawable/magnify" />
 
+
             <Button
                 android:id="@+id/help"
                 android:layout_width="85dp"
@@ -83,15 +84,21 @@
 
             <ListView
                 android:id="@+id/listView"
-                android:layout_width="match_parent"
+                android:layout_width="390dp"
                 android:layout_height="300dp"
                 android:layout_below="@+id/progressBar" >
 
             </ListView>
 
+            <FrameLayout
+                android:id="@+id/fragmentLocation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@id/listView" />
+
             <ListView
                 android:id="@+id/repositoryView"
-                android:layout_width="match_parent"
+                android:layout_width="390dp"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/listView"
                 android:background="#EBF869" />
@@ -108,4 +115,5 @@
             app:menu="@menu/example_menu" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
-</LinearLayout>
+
+</RelativeLayout>

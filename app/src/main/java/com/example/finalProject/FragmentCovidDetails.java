@@ -61,7 +61,7 @@ public class FragmentCovidDetails extends Fragment {
         dataToPass = getArguments(); // bundle back
         id = dataToPass.getLong(Covid.ITEM_ID);
         // Inflate the layout for this fragment
-        View result = inflater.inflate(R.layout.activity_covid_details, container, false);
+        View result = inflater.inflate(R.layout.fragment_covid_details, container, false);
 
         TextView idView = (TextView) result.findViewById(R.id.idText);
         idView.setText("ID : " + id);
