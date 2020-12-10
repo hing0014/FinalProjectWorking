@@ -1,8 +1,11 @@
 package com.example.finalProject;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -94,6 +98,23 @@ public class FragmentTicketDetails extends Fragment
                 parentActivity.onBackPressed();
             }
         });
+
+        Button saveToFavorites = result.findViewById(R.id.saveToFavorites);
+        saveToFavorites.setOnClickListener( clk ->
+        {
+            SQLiteDatabase dataBase = TicketMaster.getDatabase();
+            ContentValues newRowValues = new ContentValues();
+            newRowValues.put(TicketMasterOpener.COL_CITY, city);
+            newRowValues.put(TicketMasterOpener.COL_EVENT_NAME, eventName);
+            newRowValues.put(TicketMasterOpener.COL_START_DATE, startDate);
+            newRowValues.put(TicketMasterOpener.COL_MIN_PRICE, ticketPriceMin);
+            newRowValues.put(TicketMasterOpener.COL_MAX_PRICE, ticketPriceMax);
+            newRowValues.put(TicketMasterOpener.COL_IMAGE_STRING, TicketMaster.encodeTobase64(image));
+            newRowValues.put(TicketMasterOpener.COL_URL, eventUrl);
+            dataBase.insert(TicketMasterOpener.TABLE_NAME, null, newRowValues);
+            Toast.makeText(parentActivity.getApplicationContext(),R.string.added, Toast.LENGTH_SHORT).show();
+        });
+
 
         Button urlButton = result.findViewById(R.id.urlButton);
         urlButton.setOnClickListener( clk ->
