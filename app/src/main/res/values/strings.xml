@@ -67,13 +67,36 @@
     <string name="delete1">Delete</string>
     <string name="stored">This information is saved !! </string>
     <string name="helpTitle">Help Center</string>
-    <string name="covidHelp">This site shows the results of the confirmed cases Corona Virus. Please enter the country and date that you want to know. For example, Canada from 2020-10-20 to 2020-10-21, you can see the results of Canada confirmed cases by the Province.</string>
+    <string name="covidHelp">This site shows the results of the confirmed cases Corona Virus. Please enter the country and date that you want to know. For example, Canada from 2020\u201410\u201420 to 2020\u201410\u201421, you can see the results of Canada confirmed cases by the Province.</string>
     <string name="confirm">OK</string>
     <string name="repository">Load Repository</string>
     <string name="confirm1">CONFIRM</string>
     <string name="do_delete">Event Deletion</string>
+    <string name="recipeTitle">Recipe Name</string>
+    <string name="recipeIngredients">Recipe Ingredients</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="goToBrowser">Go to Recipe in Browser</string>
+    <string name="backButtonRecipe">Back</string>
+    <string name="alertToRecipeBrowser">Do you want to look at this recipe in a browser?</string>
+    <string name="saveRecipe">Favourite Recipe</string>
+    <string name="favouriteRecipe">Favourite</string>
+    <string name="saveRecipeConfirmation">Favourite this recipe?</string>
+    <string name="homeItem">Home Page</string>
+    <string name="recipeItem">Recipe</string>
+    <string name="ticketItem">Ticket Master</string>
+    <string name="helpRecipe">Help</string>
+    <string name="covidItem">Covid-19 Data</string>
+    <string name="audioItem">Audio Database</string>
+    <string name="helpTitleRecipe">How To Use Recipe Search Page</string>
+    <string name="helpMessage">To use, input the name of a recipe. The more general the term, the more recipes that will show in the results</string>
+    <string name="recipeToast">Recipe not found</string>
+    <string name="favouritesNotFound">No favourites found</string>
+    <string name="confirmSaveRecipe">Recipe Has Been Saved</string>
+    <string name="recipesFound">Recipes Found</string>
+    <string name="helpOk">OK</string>
     <string name="deletConfirm">Are you sure you would like to delete this event?</string>
     <string name="saveToFavorites">Save To Favorites</string>
     <string name="showFavorites" >Favorites</string>
     <string name="added">Event added to favorites</string>
+
 </resources>

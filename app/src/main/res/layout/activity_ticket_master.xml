@@ -26,7 +26,7 @@
 
             <TextView
                 android:id="@+id/cSearch"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="20sp"
                 android:text="@string/city_search" />
 
@@ -44,7 +44,7 @@
 
             <TextView
                 android:id="@+id/rSearch"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="20sp"
                 android:layout_below="@id/citySearch"
                 android:text="@string/radius_search" />
