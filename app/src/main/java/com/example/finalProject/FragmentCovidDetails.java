@@ -89,29 +89,34 @@ public class FragmentCovidDetails extends Fragment {
             parentActivity.onBackPressed();
         });
 
-        // this method will used store data as uer wishes
         Button storeButton = result.findViewById(R.id.store);
-        storeButton.setOnClickListener(click -> {
+        // this method will used store data as uer wishes
+        if (dataToPass.getBoolean(Covid.ITEM_ISSTORED)== false)
+        {
+            storeButton.setOnClickListener(click -> {
+                CovidOpener dbHelper = new CovidOpener(getContext());
+                SQLiteDatabase db = dbHelper.getWritableDatabase();
+                ContentValues newRowValues = new ContentValues();
+                newRowValues.put(CovidOpener.COL_ID, dataToPass.getString(Covid.ITEM_ID));
+                newRowValues.put(CovidOpener.COL_COUNTRY, dataToPass.getString(Covid.ITEM_COUNTRY));
+                newRowValues.put(CovidOpener.COL_CODE, dataToPass.getString(Covid.ITEM_CODE));
+                newRowValues.put(CovidOpener.COL_PROVINCE, dataToPass.getString(Covid.ITEM_PROVINCE));
+                newRowValues.put(CovidOpener.COL_CASES, dataToPass.getInt(Covid.ITEM_CASE));
+                newRowValues.put(CovidOpener.COL_STATUS, dataToPass.getString(Covid.ITEM_STATUS));
+                long newRowId = db.insert(CovidOpener.TABLE_NAME, null, newRowValues);
 
-            CovidOpener dbHelper = new CovidOpener(getContext());
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            ContentValues newRowValues = new ContentValues();
-            newRowValues.put(CovidOpener.COL_ID, dataToPass.getString(Covid.ITEM_ID));
-            newRowValues.put(CovidOpener.COL_COUNTRY, dataToPass.getString(Covid.ITEM_COUNTRY));
-            newRowValues.put(CovidOpener.COL_CODE, dataToPass.getString(Covid.ITEM_CODE));
-            newRowValues.put(CovidOpener.COL_PROVINCE, dataToPass.getString(Covid.ITEM_PROVINCE));
-            newRowValues.put(CovidOpener.COL_CASES, dataToPass.getInt(Covid.ITEM_CASE));
-            newRowValues.put(CovidOpener.COL_STATUS, dataToPass.getString(Covid.ITEM_STATUS));
-            long newRowId = db.insert(CovidOpener.TABLE_NAME, null, newRowValues);
-
-            // This snack bar will show the user that data stored database
-            Snackbar snackBar = Snackbar.make(getView(), R.string.stored, Snackbar.LENGTH_SHORT);
-            snackBar.setAction(R.string.confirm1, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                }
-            }).show();
-        });
+                // This snack bar will show the user that data stored database
+                Snackbar snackBar = Snackbar.make(getView(), R.string.stored, Snackbar.LENGTH_SHORT);
+                snackBar.setAction(R.string.confirm1, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                    }
+                }).show();
+            });
+        }
+        else {
+            storeButton.setVisibility(View.INVISIBLE);
+        }
         return result;
     }
 }

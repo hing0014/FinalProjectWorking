@@ -94,6 +94,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
     public final static String SAVE_COUNTRY = "country";
     public final static String SAVE_FROM = "from";
     public final static String SAVE_TO = "to";
+    public final static String ITEM_ISSTORED = "isStored";
     private static SharedPreferences sharedPref;
     private FragmentManager fm;
 
@@ -196,6 +197,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             dataToPass.putInt(ITEM_CASE, list.get(position).cases);
             dataToPass.putString(ITEM_STATUS, list.get(position).status);
             dataToPass.putLong(ITEM_ID, id);//
+            dataToPass.putBoolean(ITEM_ISSTORED, false);
             // Is tablet
             if (isTablet) {
                 FragmentCovidDetails newFragment = new FragmentCovidDetails();
@@ -222,6 +224,22 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         repositButton.setOnClickListener( clickto ->{
             loadDataFromDatabase();
             repoAdapter.notifyDataSetChanged();
+        });
+
+        repoView.setOnItemClickListener((lv, item, position, id) -> {
+            Bundle dataToPass = new Bundle();
+            dataToPass.putString(ITEM_COUNTRY, repoList.get(position).country);
+            dataToPass.putString(ITEM_CODE, repoList.get(position).countryCode);
+            dataToPass.putString(ITEM_PROVINCE, repoList.get(position).province);
+            dataToPass.putInt(ITEM_CASE, repoList.get(position).cases);
+            dataToPass.putString(ITEM_STATUS, repoList.get(position).status);
+            dataToPass.putLong(ITEM_ID, id);
+            dataToPass.putBoolean(ITEM_ISSTORED, true);
+
+            Intent goToActivity = new Intent(this, EmptyCovid.class);
+            goToActivity.putExtras(dataToPass); //send data to next activity
+            startActivity(goToActivity);
+
         });
     }
 
@@ -474,6 +492,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
         covidOpener = new CovidOpener(this);
         covidDB = covidOpener.getWritableDatabase();
 
+        repoList.clear();
         String[] columns = {covidOpener.COL_ID, covidOpener.COL_COUNTRY, covidOpener.COL_CODE, covidOpener.COL_PROVINCE, covidOpener.COL_CASES, covidOpener.COL_STATUS};
 
         Cursor results = covidDB.query(false, covidOpener.TABLE_NAME, columns, null, null, null, null, null, null);
