@@ -13,7 +13,7 @@ public class EmptyRecipe extends AppCompatActivity {
 
         Bundle setData = getIntent().getExtras();
 
-        FragmentRecipeDetails recipeFrag = new FragmentRecipeDetails();
+        RecipeFragmentDetails recipeFrag = new RecipeFragmentDetails();
         recipeFrag.setArguments( setData ); //pass data to the the fragment
         getSupportFragmentManager().beginTransaction().replace(R.id.emptyRecipeFragment, recipeFrag).commit();
     }

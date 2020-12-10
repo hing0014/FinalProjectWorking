@@ -39,6 +39,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -79,7 +80,7 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
     /**
      *An array of recipes; where the recipes will be stored once retrieved from database/website
      */
-    private ArrayList<RecipeGetters> recipes = new ArrayList<>();
+    private final ArrayList<RecipeGetters> recipes = new ArrayList<>();
     /**
      * Instance of the adapter class used to inflate the listview with rows of found recipes
      */
@@ -90,23 +91,66 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
     private static SQLiteDatabase recipeDB;
     /**
      * Instance of the AsyncTask class that runs a background thread to retrieve the recipes from the website
+     * This uses AtomicReference which
      */
-    //ViewRecipesFromURL seeRecipes = new ViewRecipesFromURL();
+    AtomicReference<ViewRecipesFromURL> recipeUrlQuery;
+    /**
+     * New instance of the frame layout for the tablet
+     */
     FrameLayout fragmentFrame;
-    FragmentRecipeDetails recipeFrag = null;
+    /**
+     * New instance of the recipe fragment details
+     */
+    RecipeFragmentDetails recipeFrag = null;
+    /**
+     * Boolean to help check whether the emulator is a tablet or not
+     */
     static boolean isTablet = false;
+    /**
+     * The shared preferences variable to store the recipe titles in
+     */
     SharedPreferences recipePrefs;
-    int recipesArrayLength;
-    long newId = 0;
-    String recipeTitle = "title";
-    String title;
-    String href;
-    String ingredients;
 
+    //int recipesArrayLength;
+    //long newId = 0;
+    /**
+     * Meant to store the titles of the saved recipes on shared prefs
+     */
+    String recipeTitle = "title";
+    /**
+     * Meant to store the title of the recipe from the xml file
+     */
+    String title;
+    /**
+     * Meant to store the url of the xml when read from the parser
+     */
+    String href;
+    /**
+     * Meant to store the ingredients of the read and parsed xml recipe file
+     */
+    String ingredients;
+    /**
+     * The button to go to the favourite recipes activity
+     */
+    Button favouriteButton;
+    /**
+     * The button for the help alert dialog
+     */
+    Button helpButton;
+
+    /**
+     * Meant to retrieve the title column in the database
+     */
     public static final String RECIPE_TITLE = "TITLE";
+    /**
+     * Meant to retrieve the href column in the database
+     */
     public static final String RECIPE_HREF = "HREF";
+    /**
+     * Meant to retrieve the ingredients column in the database
+     */
     public static final String RECIPE_INGREDIENTS = "INGREDIENTS";
-    public static final String RECIPE_ID = "_id";
+    //public static final String RECIPE_ID = "_id";
 
 
     /**
@@ -125,9 +169,7 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
         }
 
         fragmentFrame = findViewById(R.id.recipeFrame);
-        if(fragmentFrame != null){
-            isTablet = true;
-        }
+        isTablet = findViewById(R.id.fragmentLocation) != null;
 
         Toolbar recipeToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(recipeToolbar);
@@ -135,6 +177,8 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
         ActionBarDrawerToggle toggleDrawer = new ActionBarDrawerToggle(this, theDrawer, recipeToolbar, R.string.open, R.string.close);
         theDrawer.addDrawerListener(toggleDrawer);
         toggleDrawer.syncState();
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
 
         loadingBar = findViewById(R.id.recipeProgress);
         loadingBar.setVisibility(View.VISIBLE);
@@ -153,7 +197,7 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
         //Add favourite button
         //Add snackbar
 
-        AtomicReference<ViewRecipesFromURL> recipeUrlQuery = new AtomicReference<>(new ViewRecipesFromURL());
+        recipeUrlQuery = new AtomicReference<>(new ViewRecipesFromURL());
         searchRecipes.setOnClickListener( click -> {
             title = searchBar.getText().toString();
 
@@ -163,11 +207,9 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
                 recipes.clear();
                 recipeUrlQuery.get().execute("http://www.recipepuppy.com/api/?q="+ title +"&p=3&format=xml");
                 recipeUrlQuery.set(new ViewRecipesFromURL());
+                Toast.makeText(this, R.string.recipesFound, Toast.LENGTH_SHORT).show();
             }
-            else{
-                Toast.makeText(getApplicationContext(), "Recipes not found", Toast.LENGTH_SHORT).show();
 
-            }
         });
 
         recipeList.setOnItemClickListener((parent, view, pos, id) -> {
@@ -178,9 +220,10 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
             setData.putString(RECIPE_INGREDIENTS, getRecipes.getIngredients());
 
             if(isTablet){
-                recipeFrag = new FragmentRecipeDetails();
+                recipeFrag = new RecipeFragmentDetails();
                 recipeFrag.setArguments(setData);
                 getSupportFragmentManager().beginTransaction().replace(R.id.recipeFrame, recipeFrag).commit();
+                theAdapter.notifyDataSetChanged();
             }
             else{
                 Intent phoneFragment = new Intent(RecipeSearchPage.this, EmptyRecipe.class);
@@ -188,18 +231,43 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
                 startActivity(phoneFragment);
             }
         });
-
+        TextView snackBar = findViewById(R.id.snackBarRecipe);
         recipeList.setOnItemLongClickListener( (parent, view, pos, id) -> {
             AlertDialog.Builder deleteBuilder = new AlertDialog.Builder(this);
-            deleteBuilder.setTitle(getResources().getString(R.string.deleteRecipe));
-            deleteBuilder.setMessage(getResources().getString(R.string.deleteRecipeConfirmation));
+            deleteBuilder.setTitle(getResources().getString(R.string.saveRecipe));
+            deleteBuilder.setMessage(getResources().getString(R.string.saveRecipeConfirmation));
             deleteBuilder.setPositiveButton((R.string.yes), (click, arg) -> {
-                RecipeGetters selectedRecipe = recipes.get(pos);
-                recipeDB.delete(TicketMasterOpener.TABLE_NAME, RecipePageOpener.COL_ID + "= ?", new String[] {Long.toString(selectedRecipe.getRecipeID())});
+                SQLiteDatabase favouritesDB = recipeDB;
+                ContentValues newFavouriteValues = new ContentValues();
+                newFavouriteValues.put(RecipePageOpener.COL_TITLE, title); // finish
+                newFavouriteValues.put(RecipePageOpener.COL_HREF, href);
+                newFavouriteValues.put(RecipePageOpener.COL_INGREDIENTS, ingredients);
+                favouritesDB.insert(RecipePageOpener.TABLE_NAME, null, newFavouriteValues);
+//                RecipeGetters selectedRecipe = recipes.get(pos);
+//                recipeDB.delete(TicketMasterOpener.TABLE_NAME, RecipePageOpener.COL_ID + "= ?", new String[] {Long.toString(selectedRecipe.getRecipeID())});
+//                theAdapter.notifyDataSetChanged();
+                Snackbar.make(snackBar, R.string.confirmSaveRecipe, Snackbar.LENGTH_SHORT ).show();
             });
             deleteBuilder.setNegativeButton(R.string.no, (click, arg) -> { });
             deleteBuilder.create().show();
             return true;
+        });
+
+        helpButton = findViewById(R.id.recipeHelp);
+        helpButton.setOnClickListener( click -> {
+            AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
+            helpDialog.setTitle(R.string.helpTitleRecipe);
+            helpDialog.setMessage(R.string.helpMessage);
+            helpDialog.create().show();
+            helpDialog.setNeutralButton(R.string.helpOk, (clicks, arg)->{ });
+        });
+
+        favouriteButton = findViewById(R.id.recipeFavourite);
+        favouriteButton.setOnClickListener(click -> {
+            recipes.clear();
+            loadFromDatabase();
+            theAdapter.notifyDataSetChanged();
+                //Toast.makeText(this, R.string.favouritesNotFound, Toast.LENGTH_SHORT).show();
         });
 
         //ViewRecipesFromURL viewRecipes = new ViewRecipesFromURL();
@@ -262,6 +330,13 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
 
             return view;
         }
+    }
+
+    public void saveSharedPrefs(String value, String key){
+        SharedPreferences.Editor editRecipes = recipePrefs.edit();
+        editRecipes.putString(key, value);
+        editRecipes.apply();
+        theAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -327,20 +402,20 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
             String href = null;
             String ingredients = null;
             try {
-                String encode = URLEncoder.encode(strings[0], "UTF-8"); //fix
-                URL url = new URL(encode);
+                //String encode = URLEncoder.encode(strings[0], "UTF-8"); //fix
+                URL url = new URL(strings[0]);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 InputStream response = urlConnection.getInputStream();
                 XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
                 xpp.setInput( response  , "UTF-8");
-
+                //publishProgress(25);
                 int eventType = xpp.getEventType(); //The parser is currently at START_DOCUMENT
                 publishProgress(50);
                 while(eventType != XmlPullParser.END_DOCUMENT)
                 {
-                    if(eventType == XmlPullParser.START_TAG){
+                    if(eventType == XmlPullParser.START_TAG ){
                         if(xpp.getName().equals("title")){
                             xpp.next();
                             title = xpp.getText();
@@ -355,18 +430,21 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
                         }
                     }
                     eventType = xpp.next();
+                    publishProgress(75);
+
+                    ContentValues newRows = new ContentValues();
+                    newRows.put(RecipePageOpener.COL_TITLE, title);
+                    newRows.put(RecipePageOpener.COL_HREF, href);
+                    newRows.put(RecipePageOpener.COL_INGREDIENTS, ingredients);
+                    long newRowID = recipeDB.insert(RecipePageOpener.TABLE_NAME, null, newRows);
+                    recipes.add(new RecipeGetters(title, href, ingredients, newRowID));
+
                 }
-                ContentValues newRows = new ContentValues();
-                newRows.put(RecipePageOpener.COL_TITLE, title);
-                newRows.put(RecipePageOpener.COL_HREF, href);
-                newRows.put(RecipePageOpener.COL_INGREDIENTS, ingredients);
-                long newRowID = recipeDB.insert(TicketMasterOpener.TABLE_NAME, null, newRows);
-                recipes.add(new RecipeGetters(title, href, ingredients, newRowID));
+                publishProgress(100);
 
-            }catch (Exception ignored){
-
+            }catch (Exception e){
+                Log.e("tag", e.getMessage(), e);
             }
-            publishProgress(100);
             return "Done";
         }
 
@@ -377,6 +455,7 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
         public void onProgressUpdate(Integer ... args) {
             loadingBar.setProgress(args[0]);
             Log.i("Loading Bar", "Loading..."+args[0]+"% complete");
+
         }
 
         /**
@@ -384,6 +463,7 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
          * @param fromDoInBackground the string originally passed to the doInBackground method, a url in this case
          */
         public void onPostExecute(String fromDoInBackground) {
+
             Log.i("Loading Bar", "Loading Complete");
             loadingBar.setVisibility(View.INVISIBLE);
             theAdapter.notifyDataSetChanged();
@@ -394,14 +474,12 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
         super.onPause();
         EditText retrieveRecipeSearch = findViewById(R.id.searchRecipe);
         String retrieveRecipe = retrieveRecipeSearch.getText().toString();
-        SharedPreferences.Editor editRecipes = recipePrefs.edit();
-        editRecipes.putString(retrieveRecipe, recipeTitle);
-        editRecipes.apply();
+        saveSharedPrefs(retrieveRecipe, recipeTitle);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.recipe_menu, menu);
+        menuInflater.inflate(R.menu.example_menu, menu);
         return true;
     }
     @SuppressLint("NonConstantResourceId")
@@ -409,66 +487,66 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
     public boolean onOptionsItemSelected(MenuItem item){
         Intent nextActivity;
         switch(item.getItemId()){
-            case R.id.homeItem:
+            case R.id.home:
                 finish();
                 break;
-            case R.id.recipeItem:
-                nextActivity = new Intent(RecipeSearchPage.this, RecipeSearchPage.class);
-                startActivity(nextActivity);
-                break;
-            case R.id.helpItem:
-                AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
-                helpDialog.setTitle(R.string.helpTitleRecipe);
-                helpDialog.setMessage(R.string.helpMessage);
-                helpDialog.create().show();
-                helpDialog.setNeutralButton(R.string.helpOk, (click, arg)->{ });
-                break;
-            case R.id.ticketItem:
+            case (R.id.ticket):
                 nextActivity = new Intent(RecipeSearchPage.this, TicketMaster.class);
                 startActivity(nextActivity);
                 break;
-            case R.id.covidItem:
+
+            case (R.id.food):
+                nextActivity = new Intent(RecipeSearchPage.this, RecipeSearchPage.class);
+                startActivity(nextActivity);
+                break;
+
+            case (R.id.audio):
+                nextActivity = new Intent(RecipeSearchPage.this, AudioActivity.class);
+                startActivity(nextActivity);
+                break;
+
+            case (R.id.bacteria):
                 nextActivity = new Intent(RecipeSearchPage.this, Covid.class);
                 startActivity(nextActivity);
                 break;
-            case R.id.audioItem:
-                nextActivity = new Intent(RecipeSearchPage.this, AudioActivity.class);
-                startActivity(nextActivity);
+
+            case (R.id.search_item):
                 break;
         }
         return false;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(MenuItem item){
 
         Intent nextPage;
         switch(item.getItemId()){
-            case R.id.homeItem:
-                finish();
-                break;
-            case R.id.recipeItem:
-                nextPage = new Intent(RecipeSearchPage.this, RecipeSearchPage.class);
+            case R.id.home:
+                nextPage = new Intent(RecipeSearchPage.this, MainActivity.class);
                 startActivity(nextPage);
                 break;
-            case R.id.helpItem:
-                AlertDialog.Builder helpDialog = new AlertDialog.Builder(this);
-                helpDialog.setTitle(R.string.helpTitleRecipe);
-                helpDialog.setMessage(R.string.helpMessage);
-                helpDialog.create().show();
-                helpDialog.setNeutralButton(R.string.helpOk, (click, arg)->{ });
-                break;
-            case R.id.ticketItem:
+            case (R.id.ticket):
                 nextPage = new Intent(RecipeSearchPage.this, TicketMaster.class);
                 startActivity(nextPage);
                 break;
-            case R.id.covidItem:
+
+            case (R.id.food):
+                nextPage = new Intent(RecipeSearchPage.this, RecipeSearchPage.class);
+                startActivity(nextPage);
+                break;
+
+            case (R.id.audio):
+                nextPage = new Intent(RecipeSearchPage.this, AudioActivity.class);
+                startActivity(nextPage);
+                break;
+
+            case (R.id.bacteria):
                 nextPage = new Intent(RecipeSearchPage.this, Covid.class);
                 startActivity(nextPage);
                 break;
-            case R.id.audioItem:
-                nextPage = new Intent(RecipeSearchPage.this, AudioActivity.class);
-                startActivity(nextPage);
+
+            case (R.id.search_item):
                 break;
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

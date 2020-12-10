@@ -15,9 +15,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/custom"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".EmptyRecipe"></activity>
-        <activity android:name=".FragmentRecipeDetails" /> <!-- <action android:name="android.intent.action.MAIN" /> -->
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".EmptyRecipe" />
+        <!-- <action android:name="android.intent.action.MAIN" /> -->
         <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
         <!-- </intent-filter> -->
         <activity android:name=".MainActivity">
