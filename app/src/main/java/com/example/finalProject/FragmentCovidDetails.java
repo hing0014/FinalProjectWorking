@@ -8,8 +8,10 @@
  */
 package com.example.finalProject;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,7 +33,6 @@ public class FragmentCovidDetails extends Fragment {
     long id;
     Bundle dataToPass;
     AppCompatActivity parentActivity;
-
 
     /*This methods is Override
      * It is defined the AppCompatActivity
@@ -84,8 +85,17 @@ public class FragmentCovidDetails extends Fragment {
         Button backButton = result.findViewById(R.id.back1);
         backButton.setOnClickListener(click ->
         {
-            parentActivity.getSupportFragmentManager().beginTransaction().remove(this).commit();
-            parentActivity.onBackPressed();
+            if (Covid.isTablet) { // tablet
+                parentActivity.getSupportFragmentManager().beginTransaction().remove(this).commit();
+            }
+
+            else {  // phone
+                EmptyCovid parent = (EmptyCovid) getActivity();
+                Intent backToCovid = new Intent();
+                backToCovid.putExtra(Covid.ITEM_ID, dataToPass.getLong(Covid.ITEM_ID));
+                parent.setResult(Activity.RESULT_OK, backToCovid);
+                parent.onBackPressed();
+            }
 
         });
 
@@ -96,7 +106,7 @@ public class FragmentCovidDetails extends Fragment {
                 CovidOpener dbHelper = new CovidOpener(getContext());
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 ContentValues newRowValues = new ContentValues();
-                newRowValues.put(CovidOpener.COL_ID, dataToPass.getString(Covid.ITEM_ID));
+                newRowValues.put(CovidOpener.COL_ID, dataToPass.getLong(Covid.ITEM_ID));
                 newRowValues.put(CovidOpener.COL_COUNTRY, dataToPass.getString(Covid.ITEM_COUNTRY));
                 newRowValues.put(CovidOpener.COL_CODE, dataToPass.getString(Covid.ITEM_CODE));
                 newRowValues.put(CovidOpener.COL_PROVINCE, dataToPass.getString(Covid.ITEM_PROVINCE));
