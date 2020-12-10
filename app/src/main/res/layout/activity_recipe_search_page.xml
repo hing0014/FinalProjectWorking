@@ -26,10 +26,10 @@
 
             <EditText
                 android:id="@+id/searchRecipe"
-                android:layout_width="294dp"
+                android:layout_width="265dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="7dp"
                 android:autofillHints="@string/searchRecipesEdit"
                 android:hint="@string/searchRecipesEdit"
                 android:inputType="text" />
@@ -54,10 +54,10 @@
 
             <Button
                 android:id="@+id/searchButtonRecipe"
-                android:layout_width="106dp"
+                android:layout_width="121dp"
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@id/searchRecipe"
-                android:layout_marginEnd="301dp"
+                android:layout_marginEnd="284dp"
                 android:text="@string/SearchButtonText" />
 
             <Button

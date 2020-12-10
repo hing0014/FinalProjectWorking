@@ -95,8 +95,14 @@
     <string name="recipesFound">Recipes Found</string>
     <string name="helpOk">OK</string>
     <string name="deletConfirm">Are you sure you would like to delete this event?</string>
-    <string name="saveToFavorites">Save To Favorites</string>
+    <string name="saveToFavorites">Save Recipe To Favorites</string>
     <string name="showFavorites" >Favorites</string>
     <string name="added">Event added to favorites</string>
+
+    <string name="deleteRecipe">Deleting a Recipe</string>
+    <string name="confirmDeleteRecipe">Do you want to delete this recipe?</string>
+    <string name="okRecipeDeleted">Recipe has been deleted</string>
+    <string name="retrievedRecipes">Retrieved Recipes</string>
+
 
 </resources>

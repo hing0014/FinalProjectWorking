@@ -89,5 +89,10 @@
 
     <string name="favouritesNotFound">Aucune recette trouvée</string>
     <string name="confirmSaveRecipe">La recette a été enregistrée</string>
-    <string name="recipesFound">Recipes Found</string>
+    <string name="recipesFound">Recettes Trouvées </string>
+
+    <string name="deleteRecipe">Suppression d’une recette</string>
+    <string name="confirmDeleteRecipe">Voulez-vous supprimer cette recette?</string>
+    <string name="okRecipeDeleted">La recette a été supprimée</string>
+    <string name="retrievedRecipes">Recettes récupérées</string>
 </resources>

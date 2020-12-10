@@ -41,6 +41,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.w3c.dom.Text;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -97,7 +98,7 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
     /**
      * New instance of the frame layout for the tablet
      */
-    FrameLayout fragmentFrame;
+    FrameLayout frame;
     /**
      * New instance of the recipe fragment details
      */
@@ -110,9 +111,10 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
      * The shared preferences variable to store the recipe titles in
      */
     SharedPreferences recipePrefs;
-
-    //int recipesArrayLength;
-    //long newId = 0;
+    /**
+     * Allows for new row ids for the different recipes to be created and tracked
+     */
+    long newRecipeId = 0;
     /**
      * Meant to store the titles of the saved recipes on shared prefs
      */
@@ -137,7 +139,6 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
      * The button for the help alert dialog
      */
     Button helpButton;
-
     /**
      * Meant to retrieve the title column in the database
      */
@@ -150,11 +151,11 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
      * Meant to retrieve the ingredients column in the database
      */
     public static final String RECIPE_INGREDIENTS = "INGREDIENTS";
-    //public static final String RECIPE_ID = "_id";
 
 
     /**
-     * Initializes the variables above, loads the database, and calls click listeners for the search button and listview
+     * Initializes the variables above, loads the database, and calls click listeners for the search
+     * button, shows a dialog for help, retrieves saved facourites and loads a listview of recipes
      * @param savedInstanceState Pre-made bundle with every activity
      */
     @Override
@@ -168,8 +169,10 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
             theAdapter.notifyDataSetChanged();
         }
 
-        fragmentFrame = findViewById(R.id.recipeFrame);
-        isTablet = findViewById(R.id.fragmentLocation) != null;
+//        fragmentFrame = findViewById(R.id.recipeFrame);
+//        isTablet = findViewById(R.id.fragmentLocation) != null;
+        frame = findViewById(R.id.frame);
+        if(frame != null)isTablet = true;
 
         Toolbar recipeToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(recipeToolbar);
@@ -231,22 +234,16 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
                 startActivity(phoneFragment);
             }
         });
-        TextView snackBar = findViewById(R.id.snackBarRecipe);
+
         recipeList.setOnItemLongClickListener( (parent, view, pos, id) -> {
             AlertDialog.Builder deleteBuilder = new AlertDialog.Builder(this);
-            deleteBuilder.setTitle(getResources().getString(R.string.saveRecipe));
-            deleteBuilder.setMessage(getResources().getString(R.string.saveRecipeConfirmation));
+            deleteBuilder.setTitle(getResources().getString(R.string.deleteRecipe));
+            deleteBuilder.setMessage(getResources().getString(R.string.confirmDeleteRecipe));
             deleteBuilder.setPositiveButton((R.string.yes), (click, arg) -> {
-                SQLiteDatabase favouritesDB = recipeDB;
-                ContentValues newFavouriteValues = new ContentValues();
-                newFavouriteValues.put(RecipePageOpener.COL_TITLE, title); // finish
-                newFavouriteValues.put(RecipePageOpener.COL_HREF, href);
-                newFavouriteValues.put(RecipePageOpener.COL_INGREDIENTS, ingredients);
-                favouritesDB.insert(RecipePageOpener.TABLE_NAME, null, newFavouriteValues);
-//                RecipeGetters selectedRecipe = recipes.get(pos);
-//                recipeDB.delete(TicketMasterOpener.TABLE_NAME, RecipePageOpener.COL_ID + "= ?", new String[] {Long.toString(selectedRecipe.getRecipeID())});
-//                theAdapter.notifyDataSetChanged();
-                Snackbar.make(snackBar, R.string.confirmSaveRecipe, Snackbar.LENGTH_SHORT ).show();
+                RecipeGetters selectedRecipe = recipes.get(pos);
+                recipeDB.delete(RecipePageOpener.TABLE_NAME, RecipePageOpener.COL_ID + "= ?", new String[] {Long.toString(selectedRecipe.getRecipeID())});
+                theAdapter.notifyDataSetChanged();
+                Toast.makeText(getApplicationContext(), R.string.okRecipeDeleted, Toast.LENGTH_SHORT).show();
             });
             deleteBuilder.setNegativeButton(R.string.no, (click, arg) -> { });
             deleteBuilder.create().show();
@@ -262,16 +259,14 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
             helpDialog.setNeutralButton(R.string.helpOk, (clicks, arg)->{ });
         });
 
+        TextView snackBar = findViewById(R.id.snackBarRecipe);
         favouriteButton = findViewById(R.id.recipeFavourite);
         favouriteButton.setOnClickListener(click -> {
             recipes.clear();
             loadFromDatabase();
             theAdapter.notifyDataSetChanged();
-                //Toast.makeText(this, R.string.favouritesNotFound, Toast.LENGTH_SHORT).show();
+                Snackbar.make(snackBar, R.string.retrievedRecipes, Snackbar.LENGTH_SHORT).show();
         });
-
-        //ViewRecipesFromURL viewRecipes = new ViewRecipesFromURL();
-        //viewRecipes.execute("http://www.recipepuppy.com/api/?i=onions,garlic&q=omelet&p=3&format=xml");//should I split this url?
     }
 
     /**
@@ -285,9 +280,6 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
          */
         @Override
         public int getCount() {
-            if(recipes == null){
-                return 0;
-            }
             return recipes.size();
         }
 
@@ -332,6 +324,11 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
         }
     }
 
+    /**
+     * A helper method that allows for variables to be saved and stored in shared preferences
+     * @param value the value of the key to be saved
+     * @param key the name which the value will be found under
+     */
     public void saveSharedPrefs(String value, String key){
         SharedPreferences.Editor editRecipes = recipePrefs.edit();
         editRecipes.putString(key, value);
@@ -367,25 +364,6 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
     }
 
     /**
-     * Shows an alert dialog that describes the recipe once clicked from the listview, allowing the browser to open or for the recipe to be favourited
-     * @param position position of the recipe in the array of recipes
-     */
-   /* protected void showRecipe(int position){
-        RecipeGetters recipe = recipes.get(position);
-        //View recipeAlert_view = getLayoutInflater().inflate(R.layout.recipe_alertdialog_layout, null);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(recipe.getTitle());
-        builder.setMessage(recipe.getHrefURL() +"/n" + recipe.getIngredients());
-       // builder.setView(recipeAlert_view);
-        builder.setPositiveButton("Favourite", (click, b) -> Toast.makeText(getApplicationContext(),"Recipe has been favourited", Toast.LENGTH_SHORT).show());
-        builder.setNegativeButton("Close", (click, b) -> { });
-        builder.setNeutralButton("Open in Browser", (click, b) -> {
-
-        });
-    } */
-
-    /**
      * Creates a background thread to retrieve external data and store it internally, all while allowing the progress to be tracked
      */
     @SuppressLint("StaticFieldLeak")
@@ -402,7 +380,6 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
             String href = null;
             String ingredients = null;
             try {
-                //String encode = URLEncoder.encode(strings[0], "UTF-8"); //fix
                 URL url = new URL(strings[0]);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 InputStream response = urlConnection.getInputStream();
@@ -410,8 +387,7 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
                 factory.setNamespaceAware(false);
                 XmlPullParser xpp = factory.newPullParser();
                 xpp.setInput( response  , "UTF-8");
-                //publishProgress(25);
-                int eventType = xpp.getEventType(); //The parser is currently at START_DOCUMENT
+                int eventType = xpp.getEventType();
                 publishProgress(50);
                 while(eventType != XmlPullParser.END_DOCUMENT)
                 {
@@ -431,17 +407,9 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
                     }
                     eventType = xpp.next();
                     publishProgress(75);
-
-                    ContentValues newRows = new ContentValues();
-                    newRows.put(RecipePageOpener.COL_TITLE, title);
-                    newRows.put(RecipePageOpener.COL_HREF, href);
-                    newRows.put(RecipePageOpener.COL_INGREDIENTS, ingredients);
-                    long newRowID = recipeDB.insert(RecipePageOpener.TABLE_NAME, null, newRows);
-                    recipes.add(new RecipeGetters(title, href, ingredients, newRowID));
-
+                    recipes.add(new RecipeGetters(title, href, ingredients, ++newRecipeId));
                 }
                 publishProgress(100);
-
             }catch (Exception e){
                 Log.e("tag", e.getMessage(), e);
             }
@@ -469,6 +437,11 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
             theAdapter.notifyDataSetChanged();
         }
     }
+
+    /**
+     * What happens to this activity while another activity is being launched, in this case recipe
+     * titles are saved as well as what was left in the edit text
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -476,12 +449,24 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
         String retrieveRecipe = retrieveRecipeSearch.getText().toString();
         saveSharedPrefs(retrieveRecipe, recipeTitle);
     }
+
+    /**
+     * Inflates the toolbar created by the example menu
+     * @param menu the menu which contains the toolbar
+     * @return true
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.example_menu, menu);
         return true;
     }
+
+    /**
+     * Determines what each item does, which in this case, these items go to different activites when clicked
+     * @param item the different options in the toolbar
+     * @return false
+     */
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
@@ -516,6 +501,11 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
         return false;
     }
 
+    /**
+     * Determines what happens for each item in the navigation drawer, in this case, it leads to the other activities
+     * @param item each option in the navigation drawer
+     * @return false
+     */
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(MenuItem item){
@@ -552,5 +542,13 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return false;
+    }
+
+    /**
+     * Allows for the database in this activity to be retrieves
+     * @return the database full of the favourited recipes
+     */
+    public static SQLiteDatabase getRecipeDB(){
+        return recipeDB;
     }
 }

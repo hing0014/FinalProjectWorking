@@ -1,7 +1,9 @@
 package com.example.finalProject;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -15,24 +17,58 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.material.snackbar.Snackbar;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the  factory method to
- * create an instance of this fragment.
+ * A fragment class that shows the details of the recipes from the listview and allows the user to
+ * save the recipe or to look at the recipe in a browser
+ * @author Kasia Kuzma
+ *  * @version 1.0
+ *  * Course CST2335
+ *  * Lab Section 021
+ *  * RecipeSearchPage Class
  */
 public class RecipeFragmentDetails extends Fragment {
 
+    /**
+     * The parent activity of this fragment, that being the recipe search page
+     */
     private AppCompatActivity parentActivity;
+    /**
+     * Meant to reference the title column in the database
+     */
     public static final String RECIPE_TITLE = "TITLE";
+    /**
+     * References the href column in the database
+     */
     public static final String RECIPE_HREF = "HREF";
+    /**
+     * References the ingredients column in the database
+     */
     public static final String RECIPE_INGREDIENTS = "INGREDIENTS";
-    public static final String RECIPE_ID = "_id";
-
+    /**
+     * The variable to set the recipe title to, retrieved from the database
+     */
     String recipeTitle;
+    /**
+     * The variable to set the recipe ingredients to, retrieved from the database
+     */
     String ingredientsList;
+    /**
+     * The variable to set the recipe href to, retrieved from the database
+     */
     String recipeUrl;
 
+    /**
+     * Creates a view for the recipe details fragment to show the details of a recipe and allow the
+     * user to save the recipe in favourites or to open a browser for the recipe
+     * @param inflater inflates the fragment layout
+     * @param group ViewGroup
+     * @param savedInstanceState saved instance state from the previous bundle
+     * @return the new view that is the inflated fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup group, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +86,8 @@ public class RecipeFragmentDetails extends Fragment {
         recipeIngredients.setText(ingredientsList);
         Button backButton = recipeResult.findViewById(R.id.recipeFragmentBackButton);
         Button openBrowser = recipeResult.findViewById(R.id.goToBrowserButtonFragment);
+        Button saveToFavourites = recipeResult.findViewById(R.id.addFavouriteRecipe);
+        TextView detailsSnackbar = recipeResult.findViewById(R.id.detailsSnackbar);
 
         backButton.setOnClickListener( click ->
         {
@@ -70,9 +108,24 @@ public class RecipeFragmentDetails extends Fragment {
             alertGoToBrowser.setNegativeButton(getResources().getString(R.string.no), (onClick, arg) ->{ });
             alertGoToBrowser.create().show();
         });
+
+        saveToFavourites.setOnClickListener(click -> {
+            SQLiteDatabase favouritesDB = RecipeSearchPage.getRecipeDB();
+            ContentValues newRecipeValues = new ContentValues();
+            newRecipeValues.put(RecipePageOpener.COL_TITLE, recipeTitle);
+            newRecipeValues.put(RecipePageOpener.COL_HREF, recipeUrl);
+            newRecipeValues.put(RecipePageOpener.COL_INGREDIENTS, ingredientsList);
+            favouritesDB.insert(RecipePageOpener.TABLE_NAME, null, newRecipeValues);
+            Snackbar.make(detailsSnackbar, R.string.confirmSaveRecipe, Snackbar.LENGTH_SHORT).show();
+        });
+
         return recipeResult;
     }
 
+    /**
+     * Attaches a context to the fragment, in this case it's the recipe search page's context
+     * @param context the parent activity's context
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
