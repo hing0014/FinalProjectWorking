@@ -41,7 +41,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -203,7 +202,7 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
                 FragmentCovidDetails newFragment = new FragmentCovidDetails();
                 fm = getFragmentManager();
                 newFragment.setArguments(dataToPass);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLocation, new Fragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLocation, newFragment).commit();
                 myAdapter.notifyDataSetChanged();
 
             } else {  // isPhone
@@ -236,10 +235,19 @@ public class Covid extends AppCompatActivity implements NavigationView.OnNavigat
             dataToPass.putLong(ITEM_ID, id);
             dataToPass.putBoolean(ITEM_ISSTORED, true);
 
-            Intent goToActivity = new Intent(this, EmptyCovid.class);
-            goToActivity.putExtras(dataToPass); //send data to next activity
-            startActivity(goToActivity);
+            // Is tablet
+            if (isTablet) {
+                FragmentCovidDetails newFragment = new FragmentCovidDetails();
+                fm = getFragmentManager();
+                newFragment.setArguments(dataToPass);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLocation, newFragment).commit();
+                myAdapter.notifyDataSetChanged();
 
+            } else {  // isPhone
+                Intent goToActivity = new Intent(this, EmptyCovid.class);
+                goToActivity.putExtras(dataToPass); //send data to next activity
+                startActivity(goToActivity);
+            }
         });
     }
 

@@ -28,12 +28,10 @@ import com.google.android.material.snackbar.Snackbar;
  *@Author Jihyun Park
  * */
 public class FragmentCovidDetails extends Fragment {
-
-    SQLiteDatabase covidDB;
-    CovidOpener covidOpener;
     long id;
     Bundle dataToPass;
     AppCompatActivity parentActivity;
+
 
     /*This methods is Override
      * It is defined the AppCompatActivity
@@ -46,15 +44,16 @@ public class FragmentCovidDetails extends Fragment {
         super.onAttach(context);
         parentActivity = (AppCompatActivity) context;
     }
-/*
-* This is the similar patter as MyListAdapter and repoAdapter
-* This shows database as bundle, which contains id, country, country code, province, cases, status and Id
-* This methods will save data to the database if user wants
-* @param LayoutInflater inflater used to get the view
-* @param ViewGroup container
-* @param  Bundle savedInstanceState
-* @author Jihyun Park
-* */
+
+    /*
+     * This is the similar patter as MyListAdapter and repoAdapter
+     * This shows database as bundle, which contains id, country, country code, province, cases, status and Id
+     * This methods will save data to the database if user wants
+     * @param LayoutInflater inflater used to get the view
+     * @param ViewGroup container
+     * @param  Bundle savedInstanceState
+     * @author Jihyun Park
+     * */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -87,12 +86,12 @@ public class FragmentCovidDetails extends Fragment {
         {
             parentActivity.getSupportFragmentManager().beginTransaction().remove(this).commit();
             parentActivity.onBackPressed();
+
         });
 
         Button storeButton = result.findViewById(R.id.store);
-        // this method will used store data as uer wishes
-        if (dataToPass.getBoolean(Covid.ITEM_ISSTORED)== false)
-        {
+        // this is the data from searchview
+        if (dataToPass.getBoolean(Covid.ITEM_ISSTORED) == false) {
             storeButton.setOnClickListener(click -> {
                 CovidOpener dbHelper = new CovidOpener(getContext());
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -114,6 +113,7 @@ public class FragmentCovidDetails extends Fragment {
                 }).show();
             });
         }
+        // this is the data from the repository
         else {
             storeButton.setVisibility(View.INVISIBLE);
         }
