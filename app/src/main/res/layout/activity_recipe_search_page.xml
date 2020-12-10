@@ -26,34 +26,69 @@
 
             <EditText
                 android:id="@+id/searchRecipe"
-                android:layout_width="322dp"
+                android:layout_width="294dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="89dp"
+                android:layout_marginEnd="4dp"
                 android:autofillHints="@string/searchRecipesEdit"
                 android:hint="@string/searchRecipesEdit"
                 android:inputType="text" />
 
-            <Button
-                android:id="@+id/searchButtonRecipe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/searchRecipe"
-                android:layout_marginEnd="-88dp"
-                android:text="@string/SearchButtonText" />
-
-            <ListView
-                android:id="@+id/recipesList"
-                android:layout_width="match_parent"
-                android:layout_height="533dp"
-                android:layout_below="@id/searchRecipe"/>
-
             <ProgressBar
                 android:id="@+id/recipeProgress"
                 style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="43dp"
-                android:layout_below="@id/recipesList"/>
+                android:layout_width="304dp"
+                android:layout_height="35dp"
+                android:layout_below="@id/searchRecipe"
+                android:layout_alignStart="@id/recipeHelp"
+                android:layout_marginStart="84dp"
+                android:layout_marginTop="0dp" />
+
+            <TextView
+                android:id="@+id/snackBarRecipe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/recipeProgress"
+                android:layout_marginTop="-9dp"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/searchButtonRecipe"
+                android:layout_width="106dp"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@id/searchRecipe"
+                android:layout_marginEnd="301dp"
+                android:text="@string/SearchButtonText" />
+
+            <Button
+                android:id="@+id/recipeHelp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/searchButtonRecipe"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="-4dp"
+                android:layout_marginEnd="319dp"
+                android:text="@string/helpRecipe" />
+
+            <Button
+                android:id="@+id/recipeFavourite"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/recipeHelp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="281dp"
+                android:text="@string/favouriteRecipe" />
+
+            <ListView
+                android:id="@+id/recipesList"
+                android:layout_width="407dp"
+                android:layout_height="1498dp"
+                android:layout_below="@id/recipeFavourite"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="4dp" />
+
+
         </RelativeLayout>
 
     <com.google.android.material.navigation.NavigationView

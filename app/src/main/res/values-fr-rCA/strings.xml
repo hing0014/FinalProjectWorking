@@ -47,21 +47,27 @@
     <string name="do_delete">Suppression d\'événement</string>
     <string name="deletSure">Voulez-vous vraiment supprimer cet événement?</string>
 
-    <string name="recipeTitle">Recipe Name</string>
-    <string name="recipeIngredients">Recipe Ingredients</string>
-    <string name="ingredients">Ingredients</string>
-    <string name="goToBrowser">Go to Recipe in Browser</string>
-    <string name="backButtonRecipe">Back</string>
-    <string name="alertToRecipeBrowser">Do you want to look at this recipe in a browser?</string>
-    <string name="deleteRecipe">Delete Recipe</string>
-    <string name="deleteRecipeConfirmation">Are you sure you want to delete this recipe?</string>
-    <string name="homeItem">Home Page</string>
+    <string name="recipeTitle">Nom de Recette</string>
+    <string name="recipeIngredients"> Ingrédients de la Recette</string>
+    <string name="ingredients">Ingrédients</string>
+    <string name="goToBrowser">Aller à la recette dans le navigateur</string>
+    <string name="backButtonRecipe">Retourner</string>
+    <string name="alertToRecipeBrowser">Voulez-vous regarder cette recette dans un navigateur?</string>
+    <string name="saveRecipe">Recette Préférée</string>
+    <string name="favouriteRecipe">Préférée</string>
+    <string name="saveRecipeConfirmation">Vous préférez cette recette ?</string>
+    <string name="homeItem">Page d\'accueil </string>
     <string name="recipeItem">Recipe</string>
     <string name="ticketItem">Ticket Master</string>
-    <string name="helpItem">Help</string>
+    <string name="helpRecipe">Aider</string>
     <string name="covidItem">Covid-19 Data</string>
     <string name="audioItem">Audio Database</string>
-    <string name="helpTitleRecipe">How To Use Recipe Search Page</string>
-    <string name="helpMessage">To use, input the name of a recipe, the more general the term, the more recipes that will show in the results</string>
+    <string name="helpTitleRecipe">Comment utiliser la page de recherche de recettese</string>
+    <string name="helpMessage">Pour utiliser, entrez le nom d’une recette. Plus le terme est général, plus les recettes qui apparaîtront dans les résultats</string>
     <string name="helpOk">Ok</string>
+    <string name="recipeToast">Recette non trouvée</string>
+
+    <string name="favouritesNotFound">Aucune recette trouvée</string>
+    <string name="confirmSaveRecipe">La recette a été enregistrée</string>
+    <string name="recipesFound">Recipes Found</string>
 </resources>

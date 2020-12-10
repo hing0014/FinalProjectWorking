@@ -15,7 +15,7 @@
         app:showAsAction="always"/>
 
     <item android:id="@+id/helpItem"
-        android:title="@string/helpItem"
+        android:title="@string/helpRecipe"
         android:icon="@drawable/help_icon"
         android:orderInCategory="200"
         app:showAsAction="always"/>

@@ -1,22 +1,27 @@
 package com.example.finalProject;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-public class FragmentRecipeDetails extends Fragment {
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the  factory method to
+ * create an instance of this fragment.
+ */
+public class RecipeFragmentDetails extends Fragment {
 
     private AppCompatActivity parentActivity;
     public static final String RECIPE_TITLE = "TITLE";
@@ -60,10 +65,10 @@ public class FragmentRecipeDetails extends Fragment {
             alertGoToBrowser.setTitle(getResources().getString(R.string.alertToRecipeBrowser));
             alertGoToBrowser.setPositiveButton(getResources().getString(R.string.yes), (onClick, arg) ->{
                 Intent goToBrowserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(recipeUrl));
+                startActivity(goToBrowserIntent);
             });
-            alertGoToBrowser.setNegativeButton(getResources().getString(R.string.no), (onClick, arg) ->{
+            alertGoToBrowser.setNegativeButton(getResources().getString(R.string.no), (onClick, arg) ->{ });
             alertGoToBrowser.create().show();
-            });
         });
         return recipeResult;
     }
