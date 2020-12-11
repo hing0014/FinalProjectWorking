@@ -94,4 +94,9 @@
     <string name="confirmDeleteRecipe">Voulez-vous supprimer cette recette?</string>
     <string name="okRecipeDeleted">La recette a été supprimée</string>
     <string name="retrievedRecipes">Recettes récupérées</string>
+    <string name="saveTicketToFavorites">Enregistrer dans les favoris</string>
+    <string name="searchRecipesEdit">Rechercher des recettes…</string>
+    <string name="favouriteButton">Préféré</string>
+    <string name="recipeIconDesc">Icône d\'une recette</string>
+    <string name="recipeRowText">Nom de la recette</string>
 </resources>

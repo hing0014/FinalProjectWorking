@@ -107,7 +107,7 @@
             android:id="@+id/saveToFavorites"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/saveToFavorites"
+            android:text="@string/saveTicketToFavorites"
             android:layout_below="@+id/urlButton"
             />
         <Button
