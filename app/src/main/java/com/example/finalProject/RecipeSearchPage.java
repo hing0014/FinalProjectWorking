@@ -92,7 +92,8 @@ public class RecipeSearchPage extends AppCompatActivity implements NavigationVie
     private static SQLiteDatabase recipeDB;
     /**
      * Instance of the AsyncTask class that runs a background thread to retrieve the recipes from the website
-     * This uses AtomicReference which
+     * This uses AtomicReference which allows the query to be consistent and the query can be read and
+     * written from with this class
      */
     AtomicReference<ViewRecipesFromURL> recipeUrlQuery;
     /**
